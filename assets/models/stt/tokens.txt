@@ -1,0 +1,15 @@
+<blk>
+<sos/eos>
+<unk>
+emergency
+help
+medical
+fire
+danger
+secure
+team
+coordinate
+police
+evacuate
+threat
+all_clear

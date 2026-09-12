@@ -1,0 +1,23 @@
+{
+  "lang_id": 0,
+  "lang_code": "en",
+  "lang_name": "English",
+  "intents": {
+    "0": "Medical Emergency: Immediate assistance needed",
+    "1": "Fire Outbreak: Evacuate immediately",
+    "2": "Hostile Threat detected: Take cover",
+    "3": "Search and Rescue: Team required at my coordinates",
+    "4": "Perimeter Breach: Security reinforcement requested",
+    "5": "Structural Collapse: Trapped individuals detected",
+    "6": "Ammunition / Supplies Low: Resupply needed",
+    "7": "Communications Check: All stations report status",
+    "8": "Mission Complete: Returning to base",
+    "9": "SOS: Critical Distress Call - All units respond",
+    "10": "Route Blocked: Request alternate path",
+    "11": "Casualty Evacuation (CASEVAC) requested",
+    "12": "Clear Area: Sector secured",
+    "13": "Stand by: Awaiting instructions",
+    "14": "Rendezvous at primary extraction point",
+    "15": "Hazardous Chemical / Gas detected"
+  }
+}
