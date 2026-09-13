@@ -10,6 +10,7 @@ import '../core/network/ad_hoc_network_manager.dart';
 import '../core/protocol/packet_encoder.dart';
 import '../core/receiver/receiver_pipeline.dart';
 import '../core/translation/translation_service.dart';
+import 'language_setup_screen.dart';
 
 class TransceiverScreen extends StatefulWidget {
   const TransceiverScreen({super.key});
@@ -355,8 +356,9 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       sequence: _sequenceNumber,
     );
 
-    final name = _intentNames[intentId] ?? 'Alert';
-    final tagText = intentId == 9 ? '⚠️ SOS DISTRESS SENT' : '📡 SENT INTENT: $name';
+    // Resolve template in sender's selected language
+    final templates = _receiverPipeline.getTemplatesForLang(_selectedLanguage);
+    final localized = templates[intentId] ?? _intentNames[intentId] ?? 'Alert';
 
     setState(() {
       _packetsSent++;
@@ -364,8 +366,8 @@ class _TransceiverScreenState extends State<TransceiverScreen>
         0,
         ReceivedMessageEvent(
           packet: packet,
-          localizedText: tagText,
-          targetLang: 'OUTGOING',
+          localizedText: localized,
+          targetLang: _selectedLanguage,
           isEmergency: packet.isEmergency,
           networkDeltaMs: 0,
           synthesisLatencyMs: 0,
@@ -542,6 +544,20 @@ class _TransceiverScreenState extends State<TransceiverScreen>
                           },
                         ),
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: const Icon(Icons.download_for_offline_rounded, color: darkBrown, size: 22),
+                      tooltip: 'Language Voice Packs',
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => LanguageSetupScreen(
+                              onComplete: () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

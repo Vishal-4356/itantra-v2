@@ -48,6 +48,7 @@ class ReceiverPipeline {
 
   // Cached locale dictionaries: lang_code -> Map<intentId, templateString>
   final Map<String, Map<int, String>> _localeTemplates = {};
+  Map<int, String> getTemplatesForLang(String lang) => _localeTemplates[lang] ?? _localeTemplates['hi'] ?? {};
 
   final StreamController<ReceivedMessageEvent> _messageController =
       StreamController<ReceivedMessageEvent>.broadcast();

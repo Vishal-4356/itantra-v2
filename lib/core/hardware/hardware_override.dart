@@ -3,6 +3,36 @@ import 'package:flutter/services.dart';
 class HardwareOverride {
   static const MethodChannel _channel = MethodChannel('com.itantra.app/hardware_override');
 
+  /// Checks which of the 10 ISRO language TTS voice packs are installed on this device.
+  /// Returns a map: { 'hi': 'AVAILABLE', 'ta': 'MISSING', ... }
+  static Future<Map<String, String>> checkLanguagePacks() async {
+    try {
+      final res = await _channel.invokeMapMethod<String, dynamic>('checkLanguagePacks');
+      return res?.map((k, v) => MapEntry(k, v.toString())) ?? {};
+    } on PlatformException {
+      return {};
+    } on MissingPluginException {
+      // In test/desktop environment, simulate all available
+      return {
+        'hi': 'AVAILABLE', 'ta': 'AVAILABLE', 'te': 'AVAILABLE',
+        'kn': 'AVAILABLE', 'ml': 'AVAILABLE', 'mr': 'AVAILABLE',
+        'bn': 'AVAILABLE', 'gu': 'AVAILABLE', 'or': 'AVAILABLE', 'en': 'AVAILABLE',
+      };
+    }
+  }
+
+  /// Opens Android TTS settings so user can install missing language voice packs.
+  static Future<bool> installLanguagePacks() async {
+    try {
+      final res = await _channel.invokeMethod<bool>('installLanguagePacks');
+      return res ?? false;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return true;
+    }
+  }
+
   /// Overrides Android DND and forces STREAM_ALARM to 100% volume for priority emergency alerts
   static Future<Map<String, dynamic>?> triggerEmergencyAlert() async {
     try {
@@ -28,6 +58,17 @@ class HardwareOverride {
   }
 
   /// Checks if DND override access is granted
+  static Future<bool> checkDndAccess() async {
+    try {
+      final res = await _channel.invokeMethod<bool>('checkDndAccess');
+      return res ?? true;
+    } on PlatformException {
+      return false;
+    } on MissingPluginException {
+      return true;
+    }
+  }
+
   /// Speaks the given localized text using native Android TextToSpeech in the chosen Indian language
   static Future<bool> speakText({required String text, required String langCode}) async {
     try {
@@ -64,4 +105,3 @@ class HardwareOverride {
     } catch (_) {}
   }
 }
-

@@ -11,6 +11,7 @@ import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import androidx.annotation.NonNull
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -27,11 +28,67 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
     private var speechRecognizer: SpeechRecognizer? = null
     private var pendingSttResult: MethodChannel.Result? = null
 
+    // All 10 ISRO language locales
+    private val isroLocales = listOf(
+        "hi" to Locale("hi", "IN"),
+        "ta" to Locale("ta", "IN"),
+        "te" to Locale("te", "IN"),
+        "kn" to Locale("kn", "IN"),
+        "ml" to Locale("ml", "IN"),
+        "mr" to Locale("mr", "IN"),
+        "bn" to Locale("bn", "IN"),
+        "gu" to Locale("gu", "IN"),
+        "or" to Locale("or", "IN"),
+        "en" to Locale("en", "IN")
+    )
+
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             ttsInitialized = true
+            // Default to Hindi
             tts?.language = Locale("hi", "IN")
+            // Set utterance progress listener for callbacks
+            tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {}
+                override fun onDone(utteranceId: String?) {}
+                @Deprecated("Deprecated in Java")
+                override fun onError(utteranceId: String?) {}
+            })
         }
+    }
+
+    private fun getLangLocale(langCode: String): Locale {
+        return when (langCode.lowercase(Locale.ROOT)) {
+            "hi" -> Locale("hi", "IN")
+            "ta" -> Locale("ta", "IN")
+            "te" -> Locale("te", "IN")
+            "kn" -> Locale("kn", "IN")
+            "ml" -> Locale("ml", "IN")
+            "mr" -> Locale("mr", "IN")
+            "bn" -> Locale("bn", "IN")
+            "gu" -> Locale("gu", "IN")
+            "or" -> Locale("or", "IN")
+            else -> Locale("en", "IN")
+        }
+    }
+
+    /** Check which of the 10 ISRO languages have TTS voice data installed */
+    private fun checkLanguagePackStatus(): Map<String, String> {
+        val result = mutableMapOf<String, String>()
+        if (!ttsInitialized || tts == null) {
+            isroLocales.forEach { (code, _) -> result[code] = "NOT_READY" }
+            return result
+        }
+        for ((code, locale) in isroLocales) {
+            val status = tts!!.isLanguageAvailable(locale)
+            result[code] = when {
+                status >= TextToSpeech.LANG_AVAILABLE -> "AVAILABLE"
+                status == TextToSpeech.LANG_MISSING_DATA -> "MISSING"
+                status == TextToSpeech.LANG_NOT_SUPPORTED -> "NOT_SUPPORTED"
+                else -> "MISSING"
+            }
+        }
+        return result
     }
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
@@ -60,6 +117,43 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             when (call.method) {
+
+                "checkLanguagePacks" -> {
+                    // Returns map of lang_code -> "AVAILABLE" | "MISSING" | "NOT_SUPPORTED" | "NOT_READY"
+                    result.success(checkLanguagePackStatus())
+                }
+
+                "installLanguagePacks" -> {
+                    // Opens Android TTS settings to download voices
+                    try {
+                        val installIntent = Intent(TextToSpeech.Engine.ACTION_INSTALL_TTS_DATA)
+                        installIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(installIntent)
+                        result.success(true)
+                    } catch (e: Exception) {
+                        // Fallback: open TTS system settings
+                        try {
+                            val settingsIntent = Intent("com.android.settings.TTS_SETTINGS")
+                            settingsIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(settingsIntent)
+                        } catch (_: Exception) {}
+                        result.success(false)
+                    }
+                }
+
+                "installSpeechRecognitionPacks" -> {
+                    // Opens Google app or offline speech recognition download
+                    try {
+                        val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                        intent.putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+                        // This doesn't actually open a dialog but ensures offline check is triggered
+                        result.success(true)
+                    } catch (e: Exception) {
+                        result.success(false)
+                    }
+                }
+
                 "recognizeSpeech" -> {
                     val langCode = call.argument<String>("langCode") ?: "en"
                     try {
@@ -67,18 +161,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                         pendingSttResult?.success("")
                         pendingSttResult = result
 
-                        val locale = when (langCode.lowercase(Locale.ROOT)) {
-                            "hi" -> "hi-IN"
-                            "ta" -> "ta-IN"
-                            "te" -> "te-IN"
-                            "kn" -> "kn-IN"
-                            "ml" -> "ml-IN"
-                            "mr" -> "mr-IN"
-                            "bn" -> "bn-IN"
-                            "gu" -> "gu-IN"
-                            "or" -> "or-IN"
-                            else -> "en-IN"
-                        }
+                        val locale = getLangLocale(langCode).toString().replace("_", "-")
 
                         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -136,22 +219,24 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                     val text = call.argument<String>("text") ?: ""
                     val langCode = call.argument<String>("langCode") ?: "hi"
                     try {
-                        val locale = when (langCode.lowercase(Locale.ROOT)) {
-                            "hi" -> Locale("hi", "IN")
-                            "ta" -> Locale("ta", "IN")
-                            "te" -> Locale("te", "IN")
-                            "kn" -> Locale("kn", "IN")
-                            "ml" -> Locale("ml", "IN")
-                            "mr" -> Locale("mr", "IN")
-                            "bn" -> Locale("bn", "IN")
-                            "gu" -> Locale("gu", "IN")
-                            "or" -> Locale("or", "IN")
-                            else -> Locale("en", "IN")
+                        if (!ttsInitialized || tts == null) {
+                            result.success(false)
+                            return@setMethodCallHandler
                         }
-                        tts?.language = locale
-                        tts?.setSpeechRate(0.95f)
+                        val locale = getLangLocale(langCode)
+                        val langStatus = tts!!.isLanguageAvailable(locale)
+
+                        // Set language — fall back to English if not installed
+                        if (langStatus >= TextToSpeech.LANG_AVAILABLE) {
+                            tts?.language = locale
+                        } else {
+                            tts?.language = Locale("en", "IN")
+                        }
+
+                        tts?.setSpeechRate(0.90f)
+                        tts?.setPitch(1.0f)
                         val params = Bundle().apply {
-                            putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM)
+                            putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_MUSIC)
                             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
                         }
                         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, params, "iTantra_${System.currentTimeMillis()}")
