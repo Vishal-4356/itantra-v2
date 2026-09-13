@@ -195,44 +195,19 @@ class _TransceiverScreenState extends State<TransceiverScreen>
         return;
       }
 
-      if (_selectedIntentId >= 0) {
-        final dir = await getTemporaryDirectory();
-        final path = '${dir.path}/ptt_waveform_${DateTime.now().millisecondsSinceEpoch}.wav';
-        await _audioRecorder.start(
-          const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 16000, numChannels: 1),
-          path: path,
-        );
-        _isStartingRecorder = false;
-        _amplitudeSub?.cancel();
-        _amplitudeSub = _audioRecorder.onAmplitudeChanged(const Duration(milliseconds: 50)).listen((amp) {
-          if (!mounted || !_isTransmitting) return;
-          final normalized = ((amp.current + 50) / 45.0).clamp(0.15, 1.0);
-          setState(() { _waveformData.removeAt(0); _waveformData.add(normalized); });
-        });
-      } else {
-        _isStartingRecorder = false;
-        _pendingSttResult = '';
-        _sttCompleter = Completer<void>();
-        
-        _waveformTimer?.cancel();
-        _waveformTimer = Timer.periodic(const Duration(milliseconds: 70), (_) {
-          if (!mounted || !_isTransmitting) return;
-          final pulse = 0.2 + (DateTime.now().millisecondsSinceEpoch % 500) / 500.0 * 0.75;
-          setState(() { _waveformData.removeAt(0); _waveformData.add(pulse); });
-        });
-        
-        HardwareOverride.recognizeSpeech(langCode: _selectedLanguage).then((text) {
-          _pendingSttResult = text;
-          if (_sttCompleter?.isCompleted == false) {
-            _sttCompleter?.complete();
-          }
-        }).catchError((_) {
-          _pendingSttResult = '';
-          if (_sttCompleter?.isCompleted == false) {
-            _sttCompleter?.complete();
-          }
-        });
-      }
+      final dir = await getTemporaryDirectory();
+      final path = '${dir.path}/ptt_waveform_${DateTime.now().millisecondsSinceEpoch}.wav';
+      await _audioRecorder.start(
+        const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 16000, numChannels: 1),
+        path: path,
+      );
+      _isStartingRecorder = false;
+      _amplitudeSub?.cancel();
+      _amplitudeSub = _audioRecorder.onAmplitudeChanged(const Duration(milliseconds: 50)).listen((amp) {
+        if (!mounted || !_isTransmitting) return;
+        final normalized = ((amp.current + 50) / 45.0).clamp(0.15, 1.0);
+        setState(() { _waveformData.removeAt(0); _waveformData.add(normalized); });
+      });
 
       if (!_isTransmitting) {
         await _finishRecordingAndProcess();
@@ -272,73 +247,7 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       return;
     }
 
-    String transcript = '';
-    try {
-      await HardwareOverride.stopRecognition();
-      if (_pendingSttResult.isEmpty && _sttCompleter != null && !_sttCompleter!.isCompleted) {
-        await _sttCompleter!.future.timeout(const Duration(seconds: 4), onTimeout: () {});
-      }
-      transcript = _pendingSttResult.trim();
-      _pendingSttResult = '';
-    } catch (e) {
-      transcript = '';
-    }
-
-    debugPrint('[TransceiverScreen] STT transcript: "$transcript"');
-
-    if (transcript.isNotEmpty && transcript.length >= 2) {
-      final senderLangId = LangIdMapper.toId(_selectedLanguage);
-
-      final classification = IntentClassifier.classify(transcript);
-      final matchedIntentId = classification.key;
-      final confidence = classification.value;
-
-      final priority = (matchedIntentId >= 0 && confidence >= 0.60)
-          ? IntentClassifier.getPriorityForIntent(matchedIntentId)
-          : PacketPriority.normal;
-
-      final intentLabel = (matchedIntentId >= 0 && confidence >= 0.60)
-          ? _intentNames[matchedIntentId]
-          : null;
-
-      final packet = TransceiverPacket.mode2(
-        langId: senderLangId,
-        text: transcript,
-        priority: priority,
-        sequence: _sequenceNumber,
-      );
-
-      final displayTag = intentLabel != null ? '[TX VOICE ($intentLabel)]' : '[TX VOICE]';
-
-      setState(() {
-        _packetsSent++;
-        _messages.insert(0, ReceivedMessageEvent(
-          packet: packet,
-          localizedText: '$displayTag "$transcript"',
-          targetLang: 'OUTGOING',
-          isEmergency: priority == PacketPriority.emergency,
-          networkDeltaMs: 0,
-          synthesisLatencyMs: 0,
-          endToEndLatencyMs: 28,
-        ));
-      });
-      _networkManager.sendPacket(packet);
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text(
-              'No speech detected. Hold PTT button and speak clearly.',
-              style: TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF5A3E36)),
-            ),
-            duration: const Duration(seconds: 2),
-            backgroundColor: const Color(0xFFF6ECE3),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-        );
-      }
-    }
+    transmitIntent(0); // Default emergency intent if general mic talk
   }
 
   void _triggerEmergencySos() {

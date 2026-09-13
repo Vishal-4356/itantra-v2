@@ -2,121 +2,73 @@ import 'package:flutter/foundation.dart';
 
 /// 100% Open-Source Offline Translation Engine for ISRO 10 Languages
 class OfflineIndicTranslator {
-  static const Map<String, String> _hiDict = {
-    'hello': 'नमस्ते',
-    'hello testing': 'हेलो टेस्टिंग',
-    'testing': 'परीक्षण',
-    'test': 'परीक्षण',
-    'doctor': 'डॉक्टर',
-    'need doctor': 'डॉक्टर चाहिए',
-    'ambulance': 'एम्बुलेंस',
-    'emergency': 'आपातकाल',
-    'help': 'मदद',
-    'need help': 'मदद चाहिए',
-    'fire': 'आग',
-    'danger': 'खतरा',
-    'water': 'पानी',
-    'food': 'खाना',
-    'route': 'रास्ता',
-    'road': 'सड़क',
-    'blocked': 'अवरुद्ध',
-    'stop': 'रुकें',
-    'go': 'जाओ',
-    'move': 'आगे बढ़ो',
-    'moving': 'आगे बढ़ रहे हैं',
-    'safe': 'सुरक्षित',
-    'clear': 'साफ',
-    'secure': 'सुरक्षित',
-    'yes': 'हाँ',
-    'no': 'नहीं',
-    'ok': 'ठीक है',
-    'okay': 'ठीक है',
-    'copy': 'समझ गया',
-    'roger': 'समझ गया',
-    'wait': 'रुको',
-    'hold': 'रुको',
-    'standby': 'तैयार रहो',
-    'enemy': 'दुश्मन',
-    'attack': 'हमला',
-    'cover': 'छुपो',
-    'team': 'टीम',
-    'base': 'बेस',
-    'sector': 'सेक्टर',
-    'position': 'स्थान',
-    'location': 'जगह',
-    'meet': 'मिलो',
-    'come': 'आओ',
-    'send': 'भेजो',
-    'confirm': 'पुष्टि करो',
-    'report': 'रिपोर्ट',
-    'status': 'स्थिति',
-    'mission': 'मिशन',
-    'complete': 'पूरा',
-    'done': 'हो गया',
-    'we are': 'हम',
-    'i am': 'मैं हूं',
-    'i need': 'मुझे चाहिए',
-    'send help': 'मदद भेजो',
-    'urgent': 'जरूरी',
-    'immediately': 'तुरंत',
-    'now': 'अभी',
-    'north': 'उत्तर',
-    'south': 'दक्षिण',
-    'east': 'पूर्व',
-    'west': 'पश्चिम',
-    'left': 'बाएं',
-    'right': 'दाएं',
-    'forward': 'आगे',
-    'back': 'पीछे',
-    'retreat': 'पीछे हटो',
-    'advance': 'आगे बढ़ो',
-    'camp': 'शिविर',
-    'hospital': 'अस्पताल',
-    'injured': 'घायल',
-    'wounded': 'घायल',
-    'dead': 'मृत',
-    'ammunition': 'गोला-बारूद',
-    'ammo': 'गोला-बारूद',
-    'fuel': 'ईंधन',
-    'supply': 'आपूर्ति',
-    'checkpoint': 'चेकपॉइंट',
-    'border': 'सीमा',
-    'bridge': 'पुल',
-    'building': 'इमारत',
-    'vehicle': 'वाहन',
-    'helicopter': 'हेलीकॉप्टर',
-    'aircraft': 'विमान',
-  };
-
-  static const Map<String, String> _orDict = {
-    'hello': 'ନମସ୍କାର',
-    'testing': 'ପରୀକ୍ଷା',
-    'doctor': 'ଡାକ୍ତର',
-    'emergency': 'ଜରୁରୀକାଳୀନ',
-    'help': 'ସାହାଯ୍ୟ',
-    'fire': 'ନିଆଁ',
-    'danger': 'ବିପଦ',
-    'water': 'ପାଣି',
-    'food': 'ଖାଦ୍ୟ',
-    'route': 'ରାସ୍ତା',
-    'blocked': 'ବନ୍ଦ',
-    'stop': 'ଅଟକନ୍ତୁ',
-    'clear': 'ସୁରକ୍ଷିତ',
+  static const Map<String, Map<String, String>> _dictionaries = {
+    'hi': {
+      'hello': 'नमस्ते', 'testing': 'परीक्षण', 'doctor': 'डॉक्टर',
+      'emergency': 'आपातकाल', 'help': 'मदद', 'fire': 'आग',
+      'danger': 'खतरा', 'water': 'पानी', 'food': 'खाना',
+      'route': 'रास्ता', 'blocked': 'अवरुद्ध', 'stop': 'रुकें', 'clear': 'साफ',
+    },
+    'gu': {
+      'hello': 'નમસ્તે', 'testing': 'પરીક્ષણ', 'doctor': 'ડોક્ટર',
+      'emergency': 'કટોકટી', 'help': 'મદદ', 'fire': 'આગ',
+      'danger': 'ખતરો', 'water': 'પાણી', 'food': 'ખોરાક',
+      'route': 'રસ્તો', 'blocked': 'બંધ', 'stop': 'થોભો', 'clear': 'સુરક્ષિત',
+    },
+    'mr': {
+      'hello': 'नमस्कार', 'testing': 'चाचणी', 'doctor': 'डॉक्टर',
+      'emergency': 'आणीबाणी', 'help': 'मदत', 'fire': 'आग',
+      'danger': 'धोका', 'water': 'पाणी', 'food': 'अन्न',
+      'route': 'रस्ता', 'blocked': 'अडवला', 'stop': 'थांबा', 'clear': 'सुरक्षित',
+    },
+    'ta': {
+      'hello': 'வணக்கம்', 'testing': 'சோதனை', 'doctor': 'மருத்துவர்',
+      'emergency': 'அவசரம்', 'help': 'உதவி', 'fire': 'தீ',
+      'danger': 'ஆபத்து', 'water': 'தண்ணீர்', 'food': 'உணவு',
+      'route': 'பாதை', 'blocked': 'தடைப்பட்டது', 'stop': 'நில்', 'clear': 'தெளிவு',
+    },
+    'te': {
+      'hello': 'నమస్కారం', 'testing': 'పరీక్ష', 'doctor': 'వైద్యుడు',
+      'emergency': 'అత్యవసరం', 'help': 'సహాయం', 'fire': 'నిప్పు',
+      'danger': 'ప్రమాదం', 'water': 'నీరు', 'food': 'ఆహారం',
+      'route': 'దారి', 'blocked': 'మూసివేయబడింది', 'stop': 'ఆగండి', 'clear': 'సురక్షితం',
+    },
+    'kn': {
+      'hello': 'ನಮಸ್ಕಾರ', 'testing': 'ಪರೀಕ್ಷೆ', 'doctor': 'ವೈದ್ಯ',
+      'emergency': 'ತುರ್ತು', 'help': 'ಸಹಾಯ', 'fire': 'ಬೆಂಕಿ',
+      'danger': 'ಅಪಾಯ', 'water': 'ನೀರು', 'food': 'ಆಹಾರ',
+      'route': 'ದಾರಿ', 'blocked': 'ಬಂಧಿಸಲಾಗಿದೆ', 'stop': 'ನಿಲ್ಲಿಸಿ', 'clear': 'ಸುರಕ್ಷಿತ',
+    },
+    'ml': {
+      'hello': 'നമസ്കാരം', 'testing': 'പരിശോധന', 'doctor': 'ഡോക്ടർ',
+      'emergency': 'അടിയന്തരം', 'help': 'സഹായം', 'fire': 'തീ',
+      'danger': 'അപകടം', 'water': 'വെള്ളം', 'food': 'ഭക്ഷണം',
+      'route': 'വഴി', 'blocked': 'തടസ്സപ്പെട്ടു', 'stop': 'നിൽക്കുക', 'clear': 'സുരക്ഷിതം',
+    },
+    'bn': {
+      'hello': 'হ্যালো', 'testing': 'পরীক্ষা', 'doctor': 'ডাক্তার',
+      'emergency': 'জরুরি', 'help': 'সাহায্য', 'fire': 'আগুন',
+      'danger': 'বিপদ', 'water': 'জল', 'food': 'খাবার',
+      'route': 'রাস্তা', 'blocked': 'বন্ধ', 'stop': 'থামুন', 'clear': 'নিরাপদ',
+    },
+    'or': {
+      'hello': 'ନମସ୍କାର', 'testing': 'ପରୀକ୍ଷା', 'doctor': 'ଡାକ୍ତର',
+      'emergency': 'ଜରୁରୀକାଳୀନ', 'help': 'ସାହାଯ୍ୟ', 'fire': 'ନିଆଁ',
+      'danger': 'ବିପଦ', 'water': 'ପାଣି', 'food': 'ଖାଦ୍ୟ',
+      'route': 'ରାସ୍ତା', 'blocked': 'ବନ୍ଦ', 'stop': 'ଅଟକନ୍ତୁ', 'clear': 'ସୁରକ୍ଷିତ',
+    },
   };
 
   static String translate(String text, String targetLang) {
     if (text.isEmpty || targetLang == 'en') return text;
 
+    final dict = _dictionaries[targetLang] ?? _dictionaries['hi']!;
     final lower = text.toLowerCase().trim();
-    if (targetLang == 'or' && _orDict.containsKey(lower)) {
-      return _orDict[lower]!;
-    }
-    if (targetLang == 'hi' && _hiDict.containsKey(lower)) {
-      return _hiDict[lower]!;
+    if (dict.containsKey(lower)) {
+      return dict[lower]!;
     }
 
     var result = text;
-    final dict = targetLang == 'or' ? _orDict : _hiDict;
     final sortedKeys = dict.keys.toList()..sort((a, b) => b.length.compareTo(a.length));
     for (final phrase in sortedKeys) {
       result = result.replaceAll(
@@ -128,18 +80,18 @@ class OfflineIndicTranslator {
   }
 }
 
-/// 100% Open-Source Offline Translation Service using Sherpa / Opus-MT ONNX Pipelines
+/// 100% Open-Source Offline Translation Service for 10 ISRO Languages
 class TranslationService {
   static const List<String> supportedLangs = [
     'en', 'hi', 'gu', 'mr', 'kn', 'ml', 'ta', 'te', 'or', 'bn'
   ];
 
   static Future<void> prewarmAllModels() async {
-    debugPrint('[TranslationService] 100% Open-source ONNX translation pipeline ready for all 10 ISRO languages.');
+    debugPrint('[TranslationService] Offline Indic translation engine ready for 10 ISRO languages.');
   }
 
   static Future<void> prewarmModels(String targetLang) async {
-    debugPrint('[TranslationService] Prewarmed ONNX NMT for $targetLang');
+    debugPrint('[TranslationService] Prewarmed translation dictionary for $targetLang');
   }
 
   static Future<String> translate({

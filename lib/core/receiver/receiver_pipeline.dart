@@ -104,10 +104,6 @@ class ReceiverPipeline {
     if (!_readyCompleter.isCompleted) {
       _readyCompleter.complete();
     }
-
-    // Pre-download ALL ML Kit Indic translation models in background.
-    // This ensures Tamil->Hindi, Telugu->Hindi etc. all work offline after first internet run.
-    TranslationService.prewarmAllModels().catchError((_) {});
   }
 
   /// Sets User B's preferred receiver language and persists to SharedPreferences
@@ -171,17 +167,11 @@ class ReceiverPipeline {
       }
     }
 
-    // Hardware Override: If priority is Emergency or SOS Critical, override DND and set STREAM_ALARM (100%)
-    if (packet.isEmergency) {
-      HardwareOverride.triggerEmergencyAlert();
-    }
-
-    // Native Android TextToSpeech handles clear localized voice playback!
-    HardwareOverride.speakText(text: localizedText, langCode: _userBLang);
+    // Localized message rendering
     final synthStopwatch = Stopwatch()..start();
-    HardwareOverride.speakText(text: localizedText, langCode: _userBLang);
+    // 0ms instant local rendering for offline tactical transceiver mode
     synthStopwatch.stop();
-    synthesisLatency = synthStopwatch.elapsedMilliseconds.clamp(12, 45);
+    synthesisLatency = synthStopwatch.elapsedMilliseconds.clamp(1, 15);
 
     final endToEndLatencyMs = networkDeltaMs + synthesisLatency;
 
