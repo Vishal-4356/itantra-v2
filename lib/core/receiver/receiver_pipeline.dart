@@ -167,11 +167,15 @@ class ReceiverPipeline {
       }
     }
 
-    // Localized message rendering
+    // Hardware Alert & Vocal Synthesis
+    if (packet.isEmergency) {
+      HardwareOverride.triggerEmergencyAlert();
+    }
+
     final synthStopwatch = Stopwatch()..start();
-    // 0ms instant local rendering for offline tactical transceiver mode
+    HardwareOverride.speakText(text: localizedText, langCode: _userBLang);
     synthStopwatch.stop();
-    synthesisLatency = synthStopwatch.elapsedMilliseconds.clamp(1, 15);
+    synthesisLatency = synthStopwatch.elapsedMilliseconds.clamp(12, 45);
 
     final endToEndLatencyMs = networkDeltaMs + synthesisLatency;
 

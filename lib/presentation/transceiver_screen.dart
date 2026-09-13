@@ -274,9 +274,9 @@ class _TransceiverScreenState extends State<TransceiverScreen>
 
     String transcript = '';
     try {
-      await HardwareOverride.stopRecognition();
       if (_pendingSttResult.isEmpty && _sttCompleter != null && !_sttCompleter!.isCompleted) {
-        await _sttCompleter!.future.timeout(const Duration(seconds: 3), onTimeout: () {});
+        await HardwareOverride.stopRecognition();
+        await _sttCompleter!.future.timeout(const Duration(milliseconds: 1800), onTimeout: () {});
       }
       transcript = _pendingSttResult.trim();
       _pendingSttResult = '';
@@ -290,11 +290,11 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       final matchedIntentId = classification.key;
       final confidence = classification.value;
 
-      final priority = (matchedIntentId >= 0 && confidence >= 0.50)
+      final priority = (matchedIntentId >= 0 && confidence >= 0.40)
           ? IntentClassifier.getPriorityForIntent(matchedIntentId)
           : PacketPriority.normal;
 
-      final intentLabel = (matchedIntentId >= 0 && confidence >= 0.50)
+      final intentLabel = (matchedIntentId >= 0 && confidence >= 0.40)
           ? _intentNames[matchedIntentId]
           : null;
 
@@ -321,7 +321,21 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       });
       _networkManager.sendPacket(packet);
     } else {
-      // Fallback if no speech captured: transmit Comms Check
+      // If microphone captures no speech, inform user and transmit Comms Check
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'No speech detected for $_selectedLanguage. Speak clearly while holding PTT.',
+              style: const TextStyle(fontWeight: FontWeight.w600, color: Color(0xFF5A3E36)),
+            ),
+            duration: const Duration(seconds: 2),
+            backgroundColor: const Color(0xFFF6ECE3),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        );
+      }
       transmitIntent(7);
     }
   }
