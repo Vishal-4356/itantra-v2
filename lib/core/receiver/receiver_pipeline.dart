@@ -105,8 +105,9 @@ class ReceiverPipeline {
       _readyCompleter.complete();
     }
 
-    // Pre-download ML Kit translation model in background (requires internet once)
-    TranslationService.prewarmModels(_userBLang).catchError((_) {});
+    // Pre-download ALL ML Kit Indic translation models in background.
+    // This ensures Tamil->Hindi, Telugu->Hindi etc. all work offline after first internet run.
+    TranslationService.prewarmAllModels().catchError((_) {});
   }
 
   /// Sets User B's preferred receiver language and persists to SharedPreferences
@@ -134,14 +135,35 @@ class ReceiverPipeline {
     } else {
       // Mode 2: Translate sender's spoken text into receiver's preferred language
       final senderLang = LangIdMapper.fromId(packet.langId);
-      final textHasLatin = RegExp(r'[a-zA-Z]').hasMatch(packet.text);
 
-      // Translate if text contains English/Latin characters and target is Indic, or if languages differ
-      if (packet.text.isNotEmpty && ((textHasLatin && _userBLang != 'en') || senderLang != _userBLang)) {
-        final srcLang = textHasLatin ? 'en' : senderLang;
+      // Script-based language detection (more reliable than trusting packet.langId alone)
+      // Tamil: U+0B80–U+0BFF, Telugu: U+0C00–U+0C7F, Hindi/Devanagari: U+0900–U+097F, etc.
+      final textHasLatin     = RegExp(r'[a-zA-Z]').hasMatch(packet.text);
+      final textHasTamil     = RegExp(r'[\u0B80-\u0BFF]').hasMatch(packet.text);
+      final textHasTelugu    = RegExp(r'[\u0C00-\u0C7F]').hasMatch(packet.text);
+      final textHasDevanagari= RegExp(r'[\u0900-\u097F]').hasMatch(packet.text);
+      final textHasKannada   = RegExp(r'[\u0C80-\u0CFF]').hasMatch(packet.text);
+      final textHasBengali   = RegExp(r'[\u0980-\u09FF]').hasMatch(packet.text);
+      final textHasGujarati  = RegExp(r'[\u0A80-\u0AFF]').hasMatch(packet.text);
+      final textHasMalayalam = RegExp(r'[\u0D00-\u0D7F]').hasMatch(packet.text);
+      final textHasGurmukhi  = RegExp(r'[\u0A00-\u0A7F]').hasMatch(packet.text); // Punjabi
+
+      // Detect actual script language of the text
+      String detectedLang = senderLang; // default to what sender declared
+      if (textHasLatin)     detectedLang = 'en';
+      else if (textHasTamil)     detectedLang = 'ta';
+      else if (textHasTelugu)    detectedLang = 'te';
+      else if (textHasKannada)   detectedLang = 'kn';
+      else if (textHasBengali)   detectedLang = 'bn';
+      else if (textHasGujarati)  detectedLang = 'gu';
+      else if (textHasMalayalam) detectedLang = 'ml';
+      else if (textHasGurmukhi)  detectedLang = 'pa';
+      else if (textHasDevanagari)detectedLang = senderLang == 'en' ? 'hi' : senderLang;
+
+      if (packet.text.isNotEmpty && detectedLang != _userBLang) {
         localizedText = await TranslationService.translate(
           text: packet.text,
-          fromLang: srcLang,
+          fromLang: detectedLang,
           toLang: _userBLang,
         );
       } else {

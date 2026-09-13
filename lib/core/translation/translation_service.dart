@@ -1,9 +1,10 @@
 ﻿import 'package:flutter/foundation.dart';
 import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
-/// Offline Indic phrase-level translator fallback (works with zero internet)
+// ---------------------------------------------------------------------------
+// Offline dictionary fallback (en->hi only; other pairs need ML Kit models)
+// ---------------------------------------------------------------------------
 class OfflineIndicTranslator {
-  // English phrase → Hindi translation
   static const Map<String, String> _hiDict = {
     'hello': 'नमस्ते',
     'hello testing': 'हेलो टेस्टिंग',
@@ -62,35 +63,65 @@ class OfflineIndicTranslator {
     'urgent': 'जरूरी',
     'immediately': 'तुरंत',
     'now': 'अभी',
+    'north': 'उत्तर',
+    'south': 'दक्षिण',
+    'east': 'पूर्व',
+    'west': 'पश्चिम',
+    'left': 'बाएं',
+    'right': 'दाएं',
+    'forward': 'आगे',
+    'back': 'पीछे',
+    'retreat': 'पीछे हटो',
+    'advance': 'आगे बढ़ो',
+    'camp': 'शिविर',
+    'hospital': 'अस्पताल',
+    'injured': 'घायल',
+    'wounded': 'घायल',
+    'dead': 'मृत',
+    'ammunition': 'गोला-बारूद',
+    'ammo': 'गोला-बारूद',
+    'fuel': 'ईंधन',
+    'supply': 'आपूर्ति',
+    'checkpoint': 'चेकपॉइंट',
+    'border': 'सीमा',
+    'bridge': 'पुल',
+    'building': 'इमारत',
+    'vehicle': 'वाहन',
+    'helicopter': 'हेलीकॉप्टर',
+    'aircraft': 'विमान',
   };
 
   static String translate(String text, String targetLang) {
     if (text.isEmpty || targetLang == 'en') return text;
-    if (targetLang != 'hi') return text; // Only Hindi supported fully offline
+    if (targetLang != 'hi') return text;
 
     final lower = text.toLowerCase().trim();
-    
-    // Check full phrase match first
-    if (_hiDict.containsKey(lower)) {
-      return _hiDict[lower]!;
-    }
-    
-    // Word-by-word substitution
+    if (_hiDict.containsKey(lower)) return _hiDict[lower]!;
+
     var result = text;
-    // Sort by length descending so longer phrases are replaced first
-    final sortedKeys = _hiDict.keys.toList()..sort((a, b) => b.length.compareTo(a.length));
-    for (final enPhrase in sortedKeys) {
-      final regExp = RegExp(RegExp.escape(enPhrase), caseSensitive: false);
-      result = result.replaceAll(regExp, _hiDict[enPhrase]!);
+    final sortedKeys = _hiDict.keys.toList()
+      ..sort((a, b) => b.length.compareTo(a.length));
+    for (final phrase in sortedKeys) {
+      result = result.replaceAll(
+        RegExp(RegExp.escape(phrase), caseSensitive: false),
+        _hiDict[phrase]!,
+      );
     }
     return result;
   }
 }
 
-/// Hybrid Translation Service: ML Kit (with auto-download) + Offline Fallback
+// ---------------------------------------------------------------------------
+// Hybrid Translation Service: ML Kit + English Pivot + Offline Fallback
+// ---------------------------------------------------------------------------
 class TranslationService {
   static final Map<String, OnDeviceTranslator> _translators = {};
   static final Set<String> _downloadAttempted = {};
+
+  // All ML Kit supported Indic languages (malayalam and punjabi NOT supported)
+  static const List<String> _allSupportedLangs = [
+    'en', 'hi', 'ta', 'te', 'kn', 'mr', 'bn', 'gu',
+  ];
 
   static TranslateLanguage? _toMlKitLang(String code) {
     switch (code.toLowerCase()) {
@@ -106,25 +137,95 @@ class TranslationService {
     }
   }
 
-  /// Pre-warms ML Kit by downloading models in background (call on app start)
-  static Future<void> prewarmModels(String targetLang) async {
-    try {
-      final src = _toMlKitLang('en');
-      final tgt = _toMlKitLang(targetLang);
-      if (src == null || tgt == null) return;
-      final modelManager = OnDeviceTranslatorModelManager();
-      final srcCode = src.bcpCode;
-      final tgtCode = tgt.bcpCode;
-      final srcReady = await modelManager.isModelDownloaded(srcCode);
-      final tgtReady = await modelManager.isModelDownloaded(tgtCode);
-      if (!srcReady) await modelManager.downloadModel(srcCode, isWifiRequired: false);
-      if (!tgtReady) await modelManager.downloadModel(tgtCode, isWifiRequired: false);
-      debugPrint('[Translation] Models ready for en->$targetLang');
-    } catch (e) {
-      debugPrint('[Translation] Prewarm failed (offline?): $e');
+  /// Downloads ALL Indic + English models at app startup (requires internet once).
+  /// After this, ALL cross-language pairs work offline forever via the English pivot.
+  static Future<void> prewarmAllModels() async {
+    final modelManager = OnDeviceTranslatorModelManager();
+    for (final langCode in _allSupportedLangs) {
+      final mlLang = _toMlKitLang(langCode);
+      if (mlLang == null) continue;
+      final bcpCode = mlLang.bcpCode;
+      if (_downloadAttempted.contains(bcpCode)) continue;
+      try {
+        final isReady = await modelManager.isModelDownloaded(bcpCode);
+        if (!isReady) {
+          _downloadAttempted.add(bcpCode);
+          await modelManager.downloadModel(bcpCode, isWifiRequired: false);
+          debugPrint('[Translation] Downloaded model: $langCode ($bcpCode)');
+        } else {
+          debugPrint('[Translation] Model already ready: $langCode');
+        }
+      } catch (e) {
+        debugPrint('[Translation] Cannot download $langCode (offline?): $e');
+      }
     }
   }
 
+  /// Downloads just the two models needed for a single pair (faster targeted warm-up).
+  static Future<void> prewarmModels(String targetLang) async {
+    final modelManager = OnDeviceTranslatorModelManager();
+    for (final code in ['en', targetLang]) {
+      final mlLang = _toMlKitLang(code);
+      if (mlLang == null) continue;
+      final bcpCode = mlLang.bcpCode;
+      if (_downloadAttempted.contains(bcpCode)) continue;
+      try {
+        if (!await modelManager.isModelDownloaded(bcpCode)) {
+          _downloadAttempted.add(bcpCode);
+          await modelManager.downloadModel(bcpCode, isWifiRequired: false);
+        }
+      } catch (_) {}
+    }
+  }
+
+  // Internal: translate directly between two languages using ML Kit.
+  static Future<String> _mlKitTranslate(
+    String text, String fromLang, String toLang) async {
+    final src = _toMlKitLang(fromLang);
+    final tgt = _toMlKitLang(toLang);
+    if (src == null || tgt == null) throw Exception('Unsupported lang pair');
+
+    final key = '${fromLang}_$toLang';
+    _translators[key] ??= OnDeviceTranslator(
+        sourceLanguage: src, targetLanguage: tgt);
+
+    final modelManager = OnDeviceTranslatorModelManager();
+    final srcCode = src.bcpCode;
+    final tgtCode = tgt.bcpCode;
+
+    var srcReady = await modelManager.isModelDownloaded(srcCode);
+    var tgtReady = await modelManager.isModelDownloaded(tgtCode);
+
+    // Try downloading on the fly if not present
+    if (!srcReady && !_downloadAttempted.contains(srcCode)) {
+      _downloadAttempted.add(srcCode);
+      try {
+        await modelManager.downloadModel(srcCode, isWifiRequired: false);
+        srcReady = true;
+      } catch (_) {}
+    }
+    if (!tgtReady && !_downloadAttempted.contains(tgtCode)) {
+      _downloadAttempted.add(tgtCode);
+      try {
+        await modelManager.downloadModel(tgtCode, isWifiRequired: false);
+        tgtReady = true;
+      } catch (_) {}
+    }
+
+    if (!srcReady || !tgtReady) throw Exception('Models not ready');
+
+    final result = await _translators[key]!.translateText(text);
+    if (result.isEmpty) throw Exception('Empty translation result');
+    return result;
+  }
+
+  /// Translates text from [fromLang] to [toLang].
+  /// 
+  /// Strategy:
+  /// - Direct pair (e.g., en->hi): one ML Kit call.
+  /// - Cross-Indic pair (e.g., ta->hi): English PIVOT — ta->en first, then en->hi.
+  ///   This is needed because ML Kit only ships direct en<->X models, not X<->Y.
+  /// - Falls back to offline dictionary (en->hi only) if ML Kit unavailable.
   static Future<String> translate({
     required String text,
     required String fromLang,
@@ -132,57 +233,34 @@ class TranslationService {
   }) async {
     if (text.isEmpty || fromLang == toLang) return text;
 
-    // 1. Try ML Kit Translation
     try {
-      final sourceLang = _toMlKitLang(fromLang);
-      final targetLang = _toMlKitLang(toLang);
-
-      if (sourceLang != null && targetLang != null) {
-        final key = '${fromLang}_$toLang';
-        _translators[key] ??= OnDeviceTranslator(
-          sourceLanguage: sourceLang,
-          targetLanguage: targetLang,
-        );
-
-        final modelManager = OnDeviceTranslatorModelManager();
-        final srcCode = sourceLang.bcpCode;
-        final tgtCode = targetLang.bcpCode;
-
-        var srcReady = await modelManager.isModelDownloaded(srcCode);
-        var tgtReady = await modelManager.isModelDownloaded(tgtCode);
-
-        // Try downloading if not present (works if internet available)
-        if (!srcReady && !_downloadAttempted.contains(srcCode)) {
-          _downloadAttempted.add(srcCode);
-          try {
-            await modelManager.downloadModel(srcCode, isWifiRequired: false);
-            srcReady = true;
-          } catch (_) {}
-        }
-        if (!tgtReady && !_downloadAttempted.contains(tgtCode)) {
-          _downloadAttempted.add(tgtCode);
-          try {
-            await modelManager.downloadModel(tgtCode, isWifiRequired: false);
-            tgtReady = true;
-          } catch (_) {}
-        }
-
-        if (srcReady && tgtReady) {
-          final result = await _translators[key]!.translateText(text);
-          if (result.isNotEmpty) {
-            debugPrint('[Translation] MLKit $fromLang->$toLang: "$text" -> "$result"');
-            return result;
-          }
-        }
+      if (fromLang != 'en' && toLang != 'en') {
+        // PIVOT: fromLang -> English -> toLang
+        final enIntermediate = await _mlKitTranslate(text, fromLang, 'en');
+        debugPrint('[Translation] Pivot $fromLang->en: "$text" -> "$enIntermediate"');
+        final finalResult = await _mlKitTranslate(enIntermediate, 'en', toLang);
+        debugPrint('[Translation] Pivot en->$toLang: "$enIntermediate" -> "$finalResult"');
+        return finalResult;
+      } else {
+        // Direct translation
+        final result = await _mlKitTranslate(text, fromLang, toLang);
+        debugPrint('[Translation] Direct $fromLang->$toLang: "$text" -> "$result"');
+        return result;
       }
     } catch (e) {
-      debugPrint('[Translation] MLKit error: $e');
+      debugPrint('[Translation] MLKit failed ($fromLang->$toLang): $e');
     }
 
-    // 2. Offline dictionary fallback
-    final fallback = OfflineIndicTranslator.translate(text, toLang);
-    debugPrint('[Translation] Offline $fromLang->$toLang: "$text" -> "$fallback"');
-    return fallback;
+    // Last resort: offline Hindi dictionary (works for simple en->hi words even offline)
+    if (toLang == 'hi') {
+      final fallback = OfflineIndicTranslator.translate(text, 'hi');
+      debugPrint('[Translation] Offline en->hi fallback: "$text" -> "$fallback"');
+      return fallback;
+    }
+
+    // Return original text if nothing works
+    debugPrint('[Translation] No translation available for $fromLang->$toLang, returning original');
+    return text;
   }
 
   static void dispose() {
@@ -191,7 +269,9 @@ class TranslationService {
   }
 }
 
-/// Maps language codes to 4-bit packet langId and back
+// ---------------------------------------------------------------------------
+// 4-bit language ID encoder for compact packet header
+// ---------------------------------------------------------------------------
 class LangIdMapper {
   static const Map<String, int> _codeToId = {
     'en': 0, 'hi': 1, 'ta': 2, 'te': 3,

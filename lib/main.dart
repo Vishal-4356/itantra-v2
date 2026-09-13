@@ -20,13 +20,13 @@ class ITantraApp extends StatelessWidget {
       title: 'iTantra Transceiver',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F141C),
-        colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00E5FF),
-          secondary: Color(0xFF00E676),
-          error: Color(0xFFFF1744),
-          surface: Color(0xFF161E2E),
+        brightness: Brightness.light,
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF0284C7),
+          secondary: Color(0xFF059669),
+          error: Color(0xFFDC2626),
+          surface: Colors.white,
         ),
         fontFamily: 'Roboto',
       ),

@@ -1,4 +1,4 @@
-package com.example.itantra_app
+﻿package com.example.itantra_app
 
 import android.app.NotificationManager
 import android.content.Context
@@ -49,43 +49,34 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
 
-        // Initialize Native Android TTS
         try {
             tts = TextToSpeech(applicationContext, this)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
 
-        // Initialize Native Android SpeechRecognizer
         try {
             if (SpeechRecognizer.isRecognitionAvailable(applicationContext)) {
                 speechRecognizer = SpeechRecognizer.createSpeechRecognizer(applicationContext)
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
 
-        // Acquire Wi-Fi Multicast Lock to ensure UDP broadcast packets are not dropped
         try {
             val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
             multicastLock = wifiManager?.createMulticastLock("iTantraP2PMulticast")?.apply {
                 setReferenceCounted(true)
                 acquire()
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        } catch (e: Exception) { e.printStackTrace() }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL).setMethodCallHandler { call, result ->
             val audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             when (call.method) {
-                // ── SPEECH-TO-TEXT ─────────────────────────────────────────────────────
+
+                // ── SPEECH-TO-TEXT ───────────────────────────────────────────────
                 "recognizeSpeech" -> {
-                    val langCode = call.argument<String>("langCode") ?: "hi"
+                    val langCode = call.argument<String>("langCode") ?: "en"
                     try {
-                        // Cancel any in-progress recognition
                         speechRecognizer?.cancel()
                         pendingSttResult?.success("")
                         pendingSttResult = result
@@ -103,15 +94,21 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                             else -> "en-IN"
                         }
 
+                        // CRITICAL: Do NOT set EXTRA_PREFER_OFFLINE = true.
+                        // Tamil / Telugu / Kannada / Marathi offline STT models are almost
+                        // never pre-installed on Android devices. Forcing offline causes
+                        // error code 7 (ERROR_NO_MATCH) or 6 (ERROR_SPEECH_TIMEOUT) for
+                        // every non-English utterance, showing "no speech detected".
+                        // Google online STT supports all Indian languages reliably.
                         val recognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale)
                             putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, locale)
-                            putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", arrayOf(locale, "en-IN", "hi-IN"))
-                            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1)
+                            putExtra("android.speech.extra.EXTRA_ADDITIONAL_LANGUAGES", arrayOf(locale))
+                            putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3)
                             putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, false)
-                            // Prefer offline recognition if model is installed on device
-                            putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE, true)
+                            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500L)
+                            putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1000L)
                         }
 
                         speechRecognizer?.setRecognitionListener(object : RecognitionListener {
@@ -124,6 +121,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                             override fun onResults(bundle: Bundle?) {
                                 val matches = bundle?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                                 val text = matches?.firstOrNull() ?: ""
+                                android.util.Log.d("iTantra_STT", "Result [$locale]: $text")
                                 val pending = pendingSttResult
                                 pendingSttResult = null
                                 pending?.success(text)
@@ -132,9 +130,11 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                             override fun onPartialResults(partialResults: Bundle?) {}
 
                             override fun onError(error: Int) {
+                                // 1=NETWORK_TIMEOUT 2=NETWORK 3=AUDIO 4=SERVER
+                                // 5=CLIENT 6=SPEECH_TIMEOUT 7=NO_MATCH 8=RECOGNIZER_BUSY
+                                android.util.Log.e("iTantra_STT", "Error code $error for locale: $locale")
                                 val pending = pendingSttResult
                                 pendingSttResult = null
-                                // Return empty string on error (don't crash — let Dart handle it)
                                 pending?.success("")
                             }
 
@@ -143,6 +143,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
 
                         speechRecognizer?.startListening(recognizerIntent)
                     } catch (e: Exception) {
+                        android.util.Log.e("iTantra_STT", "Exception: ${e.message}")
                         pendingSttResult = null
                         result.success("")
                     }
@@ -157,7 +158,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                     }
                 }
 
-                // ── TEXT-TO-SPEECH ─────────────────────────────────────────────────────
+                // ── TEXT-TO-SPEECH ───────────────────────────────────────────────
                 "speakText" -> {
                     val text = call.argument<String>("text") ?: ""
                     val langCode = call.argument<String>("langCode") ?: "hi"
@@ -176,7 +177,6 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                         }
                         tts?.language = locale
                         tts?.setSpeechRate(0.95f)
-
                         val params = Bundle().apply {
                             putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_ALARM)
                             putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 1.0f)
@@ -188,7 +188,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                     }
                 }
 
-                // ── EMERGENCY OVERRIDE ─────────────────────────────────────────────────
+                // ── EMERGENCY OVERRIDE ───────────────────────────────────────────
                 "triggerEmergencyAlert" -> {
                     try {
                         var dndBypassed = false
@@ -199,15 +199,12 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                                 dndBypassed = true
                             }
                         }
-
                         previousVolume = audioManager.getStreamVolume(AudioManager.STREAM_ALARM)
                         val maxAlarmVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM)
                         audioManager.setStreamVolume(
-                            AudioManager.STREAM_ALARM,
-                            maxAlarmVolume,
+                            AudioManager.STREAM_ALARM, maxAlarmVolume,
                             AudioManager.FLAG_SHOW_UI or AudioManager.FLAG_PLAY_SOUND
                         )
-
                         result.success(mapOf(
                             "success" to true,
                             "alarmVolume" to maxAlarmVolume,
@@ -242,32 +239,15 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                     }
                 }
 
-                else -> {
-                    result.notImplemented()
-                }
+                else -> result.notImplemented()
             }
         }
     }
 
     override fun onDestroy() {
-        try {
-            tts?.stop()
-            tts?.shutdown()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
-            speechRecognizer?.destroy()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        try {
-            if (multicastLock?.isHeld == true) {
-                multicastLock?.release()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        try { tts?.stop(); tts?.shutdown() } catch (e: Exception) { e.printStackTrace() }
+        try { speechRecognizer?.destroy() } catch (e: Exception) { e.printStackTrace() }
+        try { if (multicastLock?.isHeld == true) multicastLock?.release() } catch (e: Exception) { e.printStackTrace() }
         super.onDestroy()
     }
 }
