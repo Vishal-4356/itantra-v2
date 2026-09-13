@@ -265,13 +265,16 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       sequence: _sequenceNumber,
     );
 
+    final name = _intentNames[intentId] ?? 'Alert';
+    final tagText = intentId == 9 ? '⚠️ SOS DISTRESS SENT' : '📡 SENT INTENT: $name';
+
     setState(() {
       _packetsSent++;
       _messages.insert(
         0,
         ReceivedMessageEvent(
           packet: packet,
-          localizedText: '⚠️ SOS DISTRESS SENT',
+          localizedText: tagText,
           targetLang: 'OUTGOING',
           isEmergency: packet.isEmergency,
           networkDeltaMs: 0,
