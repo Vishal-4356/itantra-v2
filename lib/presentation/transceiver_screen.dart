@@ -195,19 +195,44 @@ class _TransceiverScreenState extends State<TransceiverScreen>
         return;
       }
 
-      final dir = await getTemporaryDirectory();
-      final path = '${dir.path}/ptt_waveform_${DateTime.now().millisecondsSinceEpoch}.wav';
-      await _audioRecorder.start(
-        const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 16000, numChannels: 1),
-        path: path,
-      );
-      _isStartingRecorder = false;
-      _amplitudeSub?.cancel();
-      _amplitudeSub = _audioRecorder.onAmplitudeChanged(const Duration(milliseconds: 50)).listen((amp) {
-        if (!mounted || !_isTransmitting) return;
-        final normalized = ((amp.current + 50) / 45.0).clamp(0.15, 1.0);
-        setState(() { _waveformData.removeAt(0); _waveformData.add(normalized); });
-      });
+      if (_selectedIntentId >= 0) {
+        final dir = await getTemporaryDirectory();
+        final path = '${dir.path}/ptt_waveform_${DateTime.now().millisecondsSinceEpoch}.wav';
+        await _audioRecorder.start(
+          const RecordConfig(encoder: AudioEncoder.wav, sampleRate: 16000, numChannels: 1),
+          path: path,
+        );
+        _isStartingRecorder = false;
+        _amplitudeSub?.cancel();
+        _amplitudeSub = _audioRecorder.onAmplitudeChanged(const Duration(milliseconds: 50)).listen((amp) {
+          if (!mounted || !_isTransmitting) return;
+          final normalized = ((amp.current + 50) / 45.0).clamp(0.15, 1.0);
+          setState(() { _waveformData.removeAt(0); _waveformData.add(normalized); });
+        });
+      } else {
+        _isStartingRecorder = false;
+        _pendingSttResult = '';
+        _sttCompleter = Completer<void>();
+
+        _waveformTimer?.cancel();
+        _waveformTimer = Timer.periodic(const Duration(milliseconds: 70), (_) {
+          if (!mounted || !_isTransmitting) return;
+          final pulse = 0.2 + (DateTime.now().millisecondsSinceEpoch % 500) / 500.0 * 0.75;
+          setState(() { _waveformData.removeAt(0); _waveformData.add(pulse); });
+        });
+
+        HardwareOverride.recognizeSpeech(langCode: _selectedLanguage).then((text) {
+          _pendingSttResult = text;
+          if (_sttCompleter?.isCompleted == false) {
+            _sttCompleter?.complete();
+          }
+        }).catchError((_) {
+          _pendingSttResult = '';
+          if (_sttCompleter?.isCompleted == false) {
+            _sttCompleter?.complete();
+          }
+        });
+      }
 
       if (!_isTransmitting) {
         await _finishRecordingAndProcess();
@@ -247,8 +272,58 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       return;
     }
 
-    // When in "Auto" mode without a specific intent selected, transmit Comms Check (Intent 7)
-    transmitIntent(7);
+    String transcript = '';
+    try {
+      await HardwareOverride.stopRecognition();
+      if (_pendingSttResult.isEmpty && _sttCompleter != null && !_sttCompleter!.isCompleted) {
+        await _sttCompleter!.future.timeout(const Duration(seconds: 3), onTimeout: () {});
+      }
+      transcript = _pendingSttResult.trim();
+      _pendingSttResult = '';
+    } catch (e) {
+      transcript = '';
+    }
+
+    if (transcript.isNotEmpty && transcript.length >= 2) {
+      final senderLangId = LangIdMapper.toId(_selectedLanguage);
+      final classification = IntentClassifier.classify(transcript);
+      final matchedIntentId = classification.key;
+      final confidence = classification.value;
+
+      final priority = (matchedIntentId >= 0 && confidence >= 0.50)
+          ? IntentClassifier.getPriorityForIntent(matchedIntentId)
+          : PacketPriority.normal;
+
+      final intentLabel = (matchedIntentId >= 0 && confidence >= 0.50)
+          ? _intentNames[matchedIntentId]
+          : null;
+
+      final packet = TransceiverPacket.mode2(
+        langId: senderLangId,
+        text: transcript,
+        priority: priority,
+        sequence: _sequenceNumber,
+      );
+
+      final displayTag = intentLabel != null ? '[TX VOICE ($intentLabel)]' : '[TX VOICE]';
+
+      setState(() {
+        _packetsSent++;
+        _messages.insert(0, ReceivedMessageEvent(
+          packet: packet,
+          localizedText: '$displayTag "$transcript"',
+          targetLang: 'OUTGOING',
+          isEmergency: priority == PacketPriority.emergency,
+          networkDeltaMs: 0,
+          synthesisLatencyMs: 0,
+          endToEndLatencyMs: 38,
+        ));
+      });
+      _networkManager.sendPacket(packet);
+    } else {
+      // Fallback if no speech captured: transmit Comms Check
+      transmitIntent(7);
+    }
   }
 
   void _triggerEmergencySos() {

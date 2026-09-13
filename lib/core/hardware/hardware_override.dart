@@ -28,15 +28,40 @@ class HardwareOverride {
   }
 
   /// Checks if DND override access is granted
-  static Future<bool> checkDndAccess() async {
+  /// Speaks the given localized text using native Android TextToSpeech in the chosen Indian language
+  static Future<bool> speakText({required String text, required String langCode}) async {
     try {
-      final res = await _channel.invokeMethod<bool>('checkDndAccess');
-      return res ?? false;
+      final res = await _channel.invokeMethod<bool>('speakText', {
+        'text': text,
+        'langCode': langCode,
+      });
+      return res ?? true;
     } on PlatformException {
       return false;
     } on MissingPluginException {
       return true;
     }
+  }
+
+  /// Starts Android native SpeechRecognizer and returns the recognized text.
+  static Future<String> recognizeSpeech({required String langCode}) async {
+    try {
+      final res = await _channel.invokeMethod<String>('recognizeSpeech', {
+        'langCode': langCode,
+      });
+      return res ?? '';
+    } on PlatformException {
+      return '';
+    } on MissingPluginException {
+      return '';
+    }
+  }
+
+  /// Stops the ongoing speech recognition session
+  static Future<void> stopRecognition() async {
+    try {
+      await _channel.invokeMethod<bool>('stopRecognition');
+    } catch (_) {}
   }
 }
 
