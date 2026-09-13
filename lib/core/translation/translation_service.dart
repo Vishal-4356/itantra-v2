@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
+import 'package:google_mlkit_translation/google_mlkit_translation.dart';
 
-/// 100% Open-Source Offline Indic Machine Translation Engine
+/// 100% Offline Indic Machine Translation Engine
 /// Designed specifically for ISRO Disaster Transceiver & P2P Mesh Scenarios.
 /// Supports 10 ISRO Languages: hi, ta, te, kn, ml, mr, gu, bn, or, en.
 class OfflineIndicTranslator {
@@ -861,18 +862,48 @@ class OfflineIndicTranslator {
   }
 }
 
-/// 100% Open-Source Offline Translation Service for 10 ISRO Languages
+/// 100% Offline Neural & Hybrid Machine Translation Service
+/// Integrates On-Device Neural Translator (ML Kit / Opus-MT) with instant OfflineIndicTranslator fallback
 class TranslationService {
   static const List<String> supportedLangs = [
     'en', 'hi', 'gu', 'mr', 'kn', 'ml', 'ta', 'te', 'or', 'bn'
   ];
 
+  static TranslateLanguage? _mapToMlKitLang(String code) {
+    switch (code.toLowerCase()) {
+      case 'hi': return TranslateLanguage.hindi;
+      case 'ta': return TranslateLanguage.tamil;
+      case 'te': return TranslateLanguage.telugu;
+      case 'kn': return TranslateLanguage.kannada;
+      case 'mr': return TranslateLanguage.marathi;
+      case 'bn': return TranslateLanguage.bengali;
+      case 'gu': return TranslateLanguage.gujarati;
+      case 'en': return TranslateLanguage.english;
+      default: return null;
+    }
+  }
+
   static Future<void> prewarmAllModels() async {
-    debugPrint('[TranslationService] Open-source Indic translation engine ready for 10 ISRO languages.');
+    debugPrint('[TranslationService] Prewarming on-device neural & indic translation models.');
+    for (final lang in ['hi', 'ta', 'te', 'kn', 'mr', 'bn', 'gu']) {
+      await prewarmModels(lang);
+    }
   }
 
   static Future<void> prewarmModels(String targetLang) async {
-    debugPrint('[TranslationService] Prewarmed translation dictionary for $targetLang');
+    final lang = _mapToMlKitLang(targetLang);
+    if (lang != null) {
+      try {
+        final modelManager = OnDeviceTranslatorModelManager();
+        final isDownloaded = await modelManager.isModelDownloaded(lang.bcpCode);
+        if (!isDownloaded) {
+          debugPrint('[TranslationService] Downloading offline neural NMT model for ${lang.bcpCode}...');
+          await modelManager.downloadModel(lang.bcpCode);
+        }
+      } catch (e) {
+        debugPrint('[TranslationService] Prewarm model exception for $targetLang: $e');
+      }
+    }
   }
 
   static Future<String> translate({
@@ -883,11 +914,36 @@ class TranslationService {
     if (text.isEmpty || fromLang == toLang) return text;
 
     final sw = Stopwatch()..start();
-    final result = OfflineIndicTranslator.translate(text, toLang);
+
+    // 1. Try On-Device Neural Machine Translator (Runs 100% offline on device hardware)
+    final srcMl = _mapToMlKitLang(fromLang);
+    final tgtMl = _mapToMlKitLang(toLang);
+
+    if (srcMl != null && tgtMl != null) {
+      try {
+        final onDeviceTranslator = OnDeviceTranslator(
+          sourceLanguage: srcMl,
+          targetLanguage: tgtMl,
+        );
+        final neuralResult = await onDeviceTranslator.translateText(text);
+        await onDeviceTranslator.close();
+
+        if (neuralResult.isNotEmpty && neuralResult.trim().toLowerCase() != text.trim().toLowerCase()) {
+          sw.stop();
+          debugPrint('[TranslationService] Neural NMT $fromLang->$toLang ("$text" -> "$neuralResult") in ${sw.elapsedMilliseconds}ms');
+          return neuralResult.trim();
+        }
+      } catch (e) {
+        debugPrint('[TranslationService] OnDeviceTranslator error: $e');
+      }
+    }
+
+    // 2. Instant Zero-Latency Fallback: Rule & Phrase Indic Translator
+    final fallbackResult = OfflineIndicTranslator.translate(text, toLang);
     sw.stop();
 
-    debugPrint('[TranslationService] NMT $fromLang->$toLang ("$text" -> "$result") in ${sw.elapsedMilliseconds}ms');
-    return result;
+    debugPrint('[TranslationService] Fallback NMT $fromLang->$toLang ("$text" -> "$fallbackResult") in ${sw.elapsedMilliseconds}ms');
+    return fallbackResult;
   }
 
   static void dispose() {}

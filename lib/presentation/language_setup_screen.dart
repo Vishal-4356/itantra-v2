@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/hardware/hardware_override.dart';
+import '../core/translation/translation_service.dart';
 
 /// Language Pack Setup Screen - shown on first launch.
 /// Checks & installs TTS voice packs for all 10 ISRO languages.
@@ -47,6 +48,7 @@ class _LanguageSetupScreenState extends State<LanguageSetupScreen> {
   }
 
   Future<void> _installPacks() async {
+    TranslationService.prewarmAllModels();
     await HardwareOverride.installLanguagePacks();
     // After user installs in system settings and comes back, re-check
     await Future.delayed(const Duration(seconds: 3));
