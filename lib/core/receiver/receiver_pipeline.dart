@@ -127,13 +127,20 @@ class ReceiverPipeline {
     if (packet.mode == PacketMode.semanticMode1) {
       // Mode 1: Instant zero-latency template lookup in receiver's chosen language
       final templates = _localeTemplates[_userBLang] ?? _localeTemplates['en'] ?? {};
-      localizedText = templates[packet.intentId] ?? 'Alert intent #${packet.intentId}';
+      final templateText = templates[packet.intentId];
+      if (templateText != null && templateText.isNotEmpty) {
+        localizedText = templateText;
+      } else {
+        // Fallback to English intent template and translate
+        final enTemplates = _localeTemplates['en'] ?? {};
+        final enText = enTemplates[packet.intentId] ?? 'Alert intent #${packet.intentId}';
+        localizedText = OfflineIndicTranslator.translate(enText, _userBLang);
+      }
     } else {
       // Mode 2: Translate sender's spoken text into receiver's preferred language
       final senderLang = LangIdMapper.fromId(packet.langId);
 
-      // Script-based language detection (more reliable than trusting packet.langId alone)
-      // Tamil: U+0B80–U+0BFF, Telugu: U+0C00–U+0C7F, Hindi/Devanagari: U+0900–U+097F, etc.
+      // Script-based language detection
       final textHasLatin     = RegExp(r'[a-zA-Z]').hasMatch(packet.text);
       final textHasTamil     = RegExp(r'[\u0B80-\u0BFF]').hasMatch(packet.text);
       final textHasTelugu    = RegExp(r'[\u0C00-\u0C7F]').hasMatch(packet.text);
@@ -142,11 +149,10 @@ class ReceiverPipeline {
       final textHasBengali   = RegExp(r'[\u0980-\u09FF]').hasMatch(packet.text);
       final textHasGujarati  = RegExp(r'[\u0A80-\u0AFF]').hasMatch(packet.text);
       final textHasMalayalam = RegExp(r'[\u0D00-\u0D7F]').hasMatch(packet.text);
-      final textHasOdia      = RegExp(r'[\u0B00-\u0B7F]').hasMatch(packet.text); // Odia
+      final textHasOdia      = RegExp(r'[\u0B00-\u0B7F]').hasMatch(packet.text);
 
-      // Detect actual script language of the text
-      String detectedLang = senderLang; // default to what sender declared
-      if (textHasLatin)     detectedLang = 'en';
+      String detectedLang = senderLang;
+      if (textHasLatin)          detectedLang = 'en';
       else if (textHasTamil)     detectedLang = 'ta';
       else if (textHasTelugu)    detectedLang = 'te';
       else if (textHasKannada)   detectedLang = 'kn';
@@ -156,12 +162,8 @@ class ReceiverPipeline {
       else if (textHasOdia)      detectedLang = 'or';
       else if (textHasDevanagari)detectedLang = senderLang == 'en' ? 'hi' : senderLang;
 
-      if (packet.text.isNotEmpty && detectedLang != _userBLang) {
-        localizedText = await TranslationService.translate(
-          text: packet.text,
-          fromLang: detectedLang,
-          toLang: _userBLang,
-        );
+      if (packet.text.isNotEmpty) {
+        localizedText = OfflineIndicTranslator.translate(packet.text, _userBLang);
       } else {
         localizedText = packet.text;
       }
