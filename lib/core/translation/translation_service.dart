@@ -7,6 +7,24 @@ class OfflineIndicTranslator {
   // ---------------------------------------------------------------------------
   static const Map<String, Map<String, String>> _phrases = {
     'hi': {
+      'how are you': 'आप कैसे हैं',
+      'how are you doing': 'आप कैसे हैं',
+      'how are you feeling': 'आप कैसा महसूस कर रहे हैं',
+      'what is your name': 'आपका नाम क्या है',
+      'who are you': 'आप कौन हैं',
+      'where are you': 'आप कहाँ हैं',
+      'where are you located': 'आप कहाँ स्थित हैं',
+      'can you hear me': 'क्या आप मुझे सुन सकते हैं',
+      'do you hear me': 'क्या आप मुझे सुन सकते हैं',
+      'what happened': 'क्या हुआ',
+      'what is the status': 'क्या स्थिति है',
+      'i am fine': 'मैं ठीक हूं',
+      'i am ok': 'मैं ठीक हूं',
+      'i am okay': 'मैं ठीक हूं',
+      'i am safe': 'मैं सुरक्षित हूं',
+      'we are safe': 'हम सुरक्षित हैं',
+      'good morning': 'शुभ प्रभात',
+      'thank you': 'धन्यवाद',
       'i need help': 'मुझे मदद चाहिए',
       'need help': 'मदद चाहिए',
       'need doctor': 'डॉक्टर चाहिए',
@@ -28,6 +46,24 @@ class OfflineIndicTranslator {
       'road blocked': 'सड़क बंद है',
     },
     'ta': {
+      'how are you': 'நீங்கள் எப்படி இருக்கிறீர்கள்',
+      'how are you doing': 'நீங்கள் எப்படி இருக்கிறீர்கள்',
+      'how are you feeling': 'நீங்கள் எப்படி உணர்கிறீர்கள்',
+      'what is your name': 'உங்கள் பெயர் என்ன',
+      'who are you': 'நீங்கள் யார்',
+      'where are you': 'நீங்கள் எங்கே இருக்கிறீர்கள்',
+      'where are you located': 'நீங்கள் எங்கே இருக்கிறீர்கள்',
+      'can you hear me': 'நான் பேசுவது கேட்கிறதா',
+      'do you hear me': 'நான் பேசுவது கேட்கிறதா',
+      'what happened': 'என்ன நடந்தது',
+      'what is the status': 'நிலைமை என்ன',
+      'i am fine': 'நான் நலமாக இருக்கிறேன்',
+      'i am ok': 'நான் நலமாக இருக்கிறேன்',
+      'i am okay': 'நான் நலமாக இருக்கிறேன்',
+      'i am safe': 'நான் பாதுகாப்பாக இருக்கிறேன்',
+      'we are safe': 'நாங்கள் பாதுகாப்பாக இருக்கிறோம்',
+      'good morning': 'காலை வணக்கம்',
+      'thank you': 'நன்றி',
       'i need help': 'எனக்கு உதவி வேண்டும்',
       'need help': 'உதவி வேண்டும்',
       'need doctor': 'மருத்துவர் தேவை',
@@ -49,6 +85,24 @@ class OfflineIndicTranslator {
       'road blocked': 'சாலை தடைப்பட்டது',
     },
     'te': {
+      'how are you': 'మీరు ఎలా ఉన్నారు',
+      'how are you doing': 'మీరు ఎలా ఉన్నారు',
+      'how are you feeling': 'మీకు ఎలా అనిపిస్తోంది',
+      'what is your name': 'మీ పేరు ఏమిటి',
+      'who are you': 'మీరు ఎవరు',
+      'where are you': 'మీరు ఎక్కడ ఉన్నారు',
+      'where are you located': 'మీరు ఎక్కడ ఉన్నారు',
+      'can you hear me': 'నేను చెప్పేది వినిపిస్తుందా',
+      'do you hear me': 'నేను చెప్పేది వినిపిస్తుందా',
+      'what happened': 'ఏమి జరిగింది',
+      'what is the status': 'పరిస్థితి ఏమిటి',
+      'i am fine': 'నేను బాగున్నాను',
+      'i am ok': 'నేను బాగున్నాను',
+      'i am okay': 'నేను బాగున్నాను',
+      'i am safe': 'నేను సురక్షితంగా ఉన్నాను',
+      'we are safe': 'మేము సురక్షితంగా ఉన్నాము',
+      'good morning': 'శుభోదయం',
+      'thank you': 'ధన్యవాదాలు',
       'i need help': 'నాకు సహాయం కావాలి',
       'need help': 'సహాయం కావాలి',
       'need doctor': 'వైద్యుడు కావాలి',
@@ -70,6 +124,24 @@ class OfflineIndicTranslator {
       'road blocked': 'రోడ్డు మూసివేయబడింది',
     },
     'kn': {
+      'how are you': 'ನೀವು ಹೇಗಿದ್ದೀರಿ',
+      'how are you doing': 'ನೀವು ಹೇಗಿದ್ದೀರಿ',
+      'how are you feeling': 'ನಿಮಗೆ ಹೇಗನ್ನಿಸುತ್ತಿದೆ',
+      'what is your name': 'ನಿಮ್ಮ ಹೆಸರೇನು',
+      'who are you': 'ನೀವು ಯಾರು',
+      'where are you': 'ನೀವು ಎಲ್ಲಿದ್ದೀರಿ',
+      'where are you located': 'ನೀವು ಎಲ್ಲಿದ್ದೀರಿ',
+      'can you hear me': 'ನನ್ನ ಮಾತು ಕೇಳಿಸುತ್ತಿದೆಯೇ',
+      'do you hear me': 'ನನ್ನ ಮಾತು ಕೇಳಿಸುತ್ತಿದೆಯೇ',
+      'what happened': 'ಏನಾಯಿತು',
+      'what is the status': 'ಸ್ಥಿತಿ ಏನು',
+      'i am fine': 'ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ',
+      'i am ok': 'ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ',
+      'i am okay': 'ನಾನು ಚೆನ್ನಾಗಿದ್ದೇನೆ',
+      'i am safe': 'ನಾನು ಸುರಕ್ಷಿತವಾಗಿದ್ದೇನೆ',
+      'we are safe': 'ನಾವು ಸುರಕ್ಷಿತವಾಗಿದ್ದೇವೆ',
+      'good morning': 'ಶುಭೋದಯ',
+      'thank you': 'ಧನ್ಯವಾದಗಳು',
       'i need help': 'ನನಗೆ ಸಹಾಯ ಬೇಕು',
       'need help': 'ಸಹಾಯ ಬೇಕು',
       'need doctor': 'ವೈದ್ಯರು ಬೇಕು',
@@ -91,6 +163,24 @@ class OfflineIndicTranslator {
       'road blocked': 'ರಸ್ತೆ ಮುಚ್ಚಿದೆ',
     },
     'ml': {
+      'how are you': 'സുഖമാണോ',
+      'how are you doing': 'സുഖമാണോ',
+      'how are you feeling': 'സുഖം തന്നെയല്ലേ',
+      'what is your name': 'നിങ്ങളുടെ പേരെന്താണ്',
+      'who are you': 'നിങ്ങൾ ആരാണ്',
+      'where are you': 'നിങ്ങൾ എവിടെയാണ്',
+      'where are you located': 'നിങ്ങൾ എവിടെയാണ്',
+      'can you hear me': 'കേൾക്കാമോ',
+      'do you hear me': 'കേൾക്കാമോ',
+      'what happened': 'എന്തുപറ്റി',
+      'what is the status': 'അവസ്ഥ എന്താണ്',
+      'i am fine': 'എനിക്ക് കുഴപ്പമില്ല',
+      'i am ok': 'എനിക്ക് കുഴപ്പമില്ല',
+      'i am okay': 'എനിക്ക് കുഴപ്പമില്ല',
+      'i am safe': 'ഞാൻ സുരക്ഷിതനാണ്',
+      'we are safe': 'ഞങ്ങൾ സുരക്ഷിതരാണ്',
+      'good morning': 'സുപ്രഭാതം',
+      'thank you': 'നന്ദി',
       'i need help': 'എനിക്ക് സഹായം വേണം',
       'need help': 'സഹായം വേണം',
       'need doctor': 'ഡോക്ടറെ വേണം',
@@ -112,6 +202,24 @@ class OfflineIndicTranslator {
       'road blocked': 'റോഡ് തടഞ്ഞിരിക്കുന്നു',
     },
     'mr': {
+      'how are you': 'तुम्ही कसे आहात',
+      'how are you doing': 'तुम्ही कसे आहात',
+      'how are you feeling': 'तुम्हाला कसे वाटत आहे',
+      'what is your name': 'तुमचे नाव काय आहे',
+      'who are you': 'तुम्ही कोण आहात',
+      'where are you': 'तुम्ही कुठे आहात',
+      'where are you located': 'तुम्ही कुठे आहात',
+      'can you hear me': 'तुम्हाला माझा आवाज येतोय का',
+      'do you hear me': 'तुम्हाला माझा आवाज येतोय का',
+      'what happened': 'काय झाले',
+      'what is the status': 'परिस्थिती काय आहे',
+      'i am fine': 'मी ठीक आहे',
+      'i am ok': 'मी ठीक आहे',
+      'i am okay': 'मी ठीक आहे',
+      'i am safe': 'मी सुरक्षित आहे',
+      'we are safe': 'आम्ही सुरक्षित आहोत',
+      'good morning': 'शुभ प्रभात',
+      'thank you': 'धन्यवाद',
       'i need help': 'मला मदत हवी आहे',
       'need help': 'मदत हवी आहे',
       'need doctor': 'डॉक्टर हवे आहेत',
@@ -133,6 +241,24 @@ class OfflineIndicTranslator {
       'road blocked': 'रस्ता बंद आहे',
     },
     'gu': {
+      'how are you': 'તમે કેમ છો',
+      'how are you doing': 'તમે કેમ છો',
+      'how are you feeling': 'તમને કેવું લાગે છે',
+      'what is your name': 'તમારું નામ શું છે',
+      'who are you': 'તમે કોણ છો',
+      'where are you': 'તમે ક્યાં છો',
+      'where are you located': 'તમે ક્યાં છો',
+      'can you hear me': 'શું તમે મને સાંભળી શકો છો',
+      'do you hear me': 'શું તમે મને સાંભળી શકો છો',
+      'what happened': 'શું થયું',
+      'what is the status': 'સ્થિતિ શું છે',
+      'i am fine': 'હું સરસ છું',
+      'i am ok': 'હું સરસ છું',
+      'i am okay': 'હું સરસ છું',
+      'i am safe': 'હું સુરક્ષિત છું',
+      'we are safe': 'અમે સુરક્ષિત છીએ',
+      'good morning': 'શુભ સવાર',
+      'thank you': 'આભાર',
       'i need help': 'મને મદદ જોઈએ છે',
       'need help': 'મદદ જોઈએ છે',
       'need doctor': 'ડૉક્ટર જોઈએ છે',
@@ -154,6 +280,24 @@ class OfflineIndicTranslator {
       'road blocked': 'સડક બંધ છે',
     },
     'bn': {
+      'how are you': 'আপনি কেমন আছেন',
+      'how are you doing': 'আপনি কেমন আছেন',
+      'how are you feeling': 'আপনার কেমন লাগছে',
+      'what is your name': 'আপনার নাম কি',
+      'who are you': 'আপনি কে',
+      'where are you': 'আপনি কোথায় আছেন',
+      'where are you located': 'আপনি কোথায় আছেন',
+      'can you hear me': 'আপনি কি শুনতে পাচ্ছেন',
+      'do you hear me': 'আপনি কি শুনতে পাচ্ছেন',
+      'what happened': 'কী হয়েছে',
+      'what is the status': 'অবস্থা কী',
+      'i am fine': 'আমি ভালো আছি',
+      'i am ok': 'আমি ভালো আছি',
+      'i am okay': 'আমি ভালো আছি',
+      'i am safe': 'আমি নিরাপদ',
+      'we are safe': 'আমরা নিরাপদ',
+      'good morning': 'শুভ সকাল',
+      'thank you': 'ধন্যবাদ',
       'i need help': 'আমার সাহায্য দরকার',
       'need help': 'সাহায্য দরকার',
       'need doctor': 'ডাক্তার দরকার',
@@ -175,6 +319,24 @@ class OfflineIndicTranslator {
       'road blocked': 'রাস্তা বন্ধ',
     },
     'or': {
+      'how are you': 'ଆପଣ କେମିତି ଅଛନ୍ତି',
+      'how are you doing': 'ଆପଣ କେମିତି ଅଛନ୍ତି',
+      'how are you feeling': 'ଆପଣଙ୍କୁ କେମିତି ଲାଗୁଛି',
+      'what is your name': 'ଆପଣଙ୍କ ନାମ କ’ଣ',
+      'who are you': 'ଆପଣ କିଏ',
+      'where are you': 'ଆପଣ କେଉଁଠାରେ ଅଛନ୍ତି',
+      'where are you located': 'ଆପଣ କେଉଁଠାରେ ଅଛନ୍ତି',
+      'can you hear me': 'ଆପଣ ଶୁଣିପାରୁଛନ୍ତି କି',
+      'do you hear me': 'ଆପଣ ଶୁଣିପାରୁଛନ୍ତି କି',
+      'what happened': 'କ’ଣ ହେଲା',
+      'what is the status': 'ଅବସ୍ଥା କ’ଣ',
+      'i am fine': 'ମୁଁ ଭଲ ଅଛି',
+      'i am ok': 'ମୁଁ ଭଲ ଅଛି',
+      'i am okay': 'ମୁଁ ଭଲ ଅଛି',
+      'i am safe': 'ମୁଁ ସୁରକ୍ଷିତ',
+      'we are safe': 'ଆମେ ସୁରକ୍ଷିତ',
+      'good morning': 'ଶୁଭ ସକାଳ',
+      'thank you': 'ଧନ୍ୟବାଦ',
       'i need help': 'ମୋର ସାହାଯ୍ୟ ଦରକାର',
       'need help': 'ସାହାଯ୍ୟ ଦରକାର',
       'need doctor': 'ଡାକ୍ତର ଦରକାର',
@@ -202,42 +364,38 @@ class OfflineIndicTranslator {
   // ---------------------------------------------------------------------------
   static const Map<String, Map<String, String>> _dictionaries = {
     'hi': {
-      // Greetings
-      'hello': 'नमस्ते', 'hi': 'नमस्ते', 'namaste': 'नमस्ते', 'testing': 'परीक्षण',
-      // Pronouns
+      'hello': 'नमस्ते', 'hi': 'नमस्ते', 'testing': 'परीक्षण',
+      'how': 'कैसे', 'what': 'क्या', 'where': 'कहाँ', 'who': 'कौन', 'when': 'कब', 'why': 'क्यों',
       'i': 'मैं', 'we': 'हम', 'you': 'आप', 'they': 'वे', 'he': 'वह', 'she': 'वह',
       'my': 'मेरा', 'our': 'हमारा', 'your': 'आपका', 'their': 'उनका',
       'this': 'यह', 'that': 'वह', 'here': 'यहाँ', 'there': 'वहाँ',
-      // Verbs
       'am': 'हूं', 'is': 'है', 'are': 'हैं', 'was': 'था', 'were': 'थे',
+      'doing': 'कर रहे', 'going': 'जा रहे',
       'need': 'चाहिए', 'want': 'चाहते हैं', 'have': 'है', 'has': 'है',
       'send': 'भेजें', 'come': 'आओ', 'go': 'जाओ', 'stop': 'रुकें',
       'call': 'बुलाओ', 'evacuate': 'निकालो', 'move': 'हटो',
-      // Emergency words
       'help': 'मदद', 'emergency': 'आपातकाल', 'danger': 'खतरा', 'sos': 'आपातकालीन संकट',
       'fire': 'आग', 'water': 'पानी', 'food': 'खाना', 'doctor': 'डॉक्टर',
       'medical': 'चिकित्सा', 'police': 'पुलिस', 'rescue': 'बचाव',
-      // Status words
       'injured': 'घायल', 'wounded': 'जखमी', 'sick': 'बीमार', 'dead': 'मृत',
       'trapped': 'फंसे', 'stuck': 'अटके', 'missing': 'लापता', 'lost': 'खोया',
       'safe': 'सुरक्षित', 'clear': 'साफ', 'blocked': 'अवरुद्ध', 'open': 'खुला',
-      // Nouns
       'people': 'लोग', 'team': 'टीम', 'unit': 'दल', 'group': 'समूह',
       'building': 'इमारत', 'road': 'सड़क', 'route': 'रास्ता', 'bridge': 'पुल',
       'area': 'क्षेत्र', 'zone': 'इलाका', 'location': 'स्थान', 'position': 'जगह',
       'name': 'नाम', 'number': 'संख्या',
-      // Direction/action
       'urgent': 'तत्काल', 'immediately': 'तुरंत', 'quickly': 'जल्दी', 'now': 'अभी',
       'please': 'कृपया', 'alert': 'सतर्क', 'warning': 'चेतावनी',
-      // Comms
       'comms': 'संचार जांच', 'comms check': 'संचार जांच', 'threat': 'शत्रुतापूर्ण खतरा', 'search': 'खोज और बचाव',
     },
     'ta': {
       'hello': 'வணக்கம்', 'hi': 'வணக்கம்', 'testing': 'சோதனை',
+      'how': 'எப்படி', 'what': 'என்ன', 'where': 'எங்கே', 'who': 'யார்', 'when': 'எப்போது', 'why': 'ஏன்',
       'i': 'நான்', 'we': 'நாங்கள்', 'you': 'நீங்கள்', 'they': 'அவர்கள்', 'he': 'அவன்', 'she': 'அவள்',
       'my': 'என்', 'our': 'எங்கள்', 'your': 'உங்கள்', 'their': 'அவர்கள்',
       'this': 'இது', 'that': 'அது', 'here': 'இங்கே', 'there': 'அங்கே',
-      'am': 'இருக்கிறேன்', 'is': 'இருக்கிறது', 'are': 'இருக்கிறார்கள்', 'was': 'இருந்தது', 'were': 'இருந்தனர்',
+      'am': 'இருக்கிறேன்', 'is': 'இருக்கிறது', 'are': 'இருக்கிறீர்கள்', 'was': 'இருந்தது', 'were': 'இருந்தனர்',
+      'doing': 'செய்கிறீர்கள்', 'going': 'போகிறீர்கள்',
       'need': 'வேண்டும்', 'want': 'வேண்டும்', 'have': 'இருக்கிறது', 'has': 'இருக்கிறது',
       'send': 'அனுப்பு', 'come': 'வா', 'go': 'போ', 'stop': 'நில்',
       'call': 'அழை', 'evacuate': 'வெளியேறு', 'move': 'நகர்',
@@ -257,10 +415,12 @@ class OfflineIndicTranslator {
     },
     'te': {
       'hello': 'నమస్కారం', 'hi': 'నమస్కారం', 'testing': 'పరీక్ష',
+      'how': 'ఎలా', 'what': 'ఏమిటి', 'where': 'ఎక్కడ', 'who': 'ఎవరు', 'when': 'ఎప్పుడు', 'why': 'ఎందుకు',
       'i': 'నేను', 'we': 'మేము', 'you': 'మీరు', 'they': 'వారు', 'he': 'అతను', 'she': 'ఆమె',
       'my': 'నా', 'our': 'మా', 'your': 'మీ', 'their': 'వారి',
       'this': 'ఇది', 'that': 'అది', 'here': 'ఇక్కడ', 'there': 'అక్కడ',
       'am': 'ఉన్నాను', 'is': 'ఉంది', 'are': 'ఉన్నారు', 'was': 'ఉంది', 'were': 'ఉన్నారు',
+      'doing': 'చేస్తున్నారు', 'going': 'వెళ్తున్నారు',
       'need': 'కావాలి', 'want': 'కావాలి', 'have': 'ఉంది', 'has': 'ఉంది',
       'send': 'పంపండి', 'come': 'రండి', 'go': 'వెళ్ళండి', 'stop': 'ఆగండి',
       'call': 'పిలవండి', 'evacuate': 'తరలించండి', 'move': 'కదలండి',
@@ -280,10 +440,12 @@ class OfflineIndicTranslator {
     },
     'kn': {
       'hello': 'ನಮಸ್ಕಾರ', 'hi': 'ನಮಸ್ಕಾರ', 'testing': 'ಪರೀಕ್ಷೆ',
+      'how': 'ಹೇಗೆ', 'what': 'ಏನು', 'where': 'ಎಲ್ಲಿ', 'who': 'ಯಾರು', 'when': 'ಯಾವಾಗ', 'why': 'ಏಕೆ',
       'i': 'ನಾನು', 'we': 'ನಾವು', 'you': 'ನೀವು', 'they': 'ಅವರು', 'he': 'ಅವನು', 'she': 'ಅವಳು',
       'my': 'ನನ್ನ', 'our': 'ನಮ್ಮ', 'your': 'ನಿಮ್ಮ', 'their': 'ಅವರ',
       'this': 'ಇದು', 'that': 'ಅದು', 'here': 'ಇಲ್ಲಿ', 'there': 'ಅಲ್ಲಿ',
-      'am': 'ಇದ್ದೇನೆ', 'is': 'ಇದೆ', 'are': 'ಇದ್ದಾರೆ', 'was': 'ಇತ್ತು', 'were': 'ಇದ್ದರು',
+      'am': 'ಇದ್ದೇನೆ', 'is': 'ಇದೆ', 'are': 'ಇದ್ದೀರಿ', 'was': 'ಇತ್ತು', 'were': 'ಇದ್ದರು',
+      'doing': 'ಮಾಡುತ್ತಿದ್ದೀರಿ', 'going': 'ಹೋಗುತ್ತಿದ್ದೀರಿ',
       'need': 'ಬೇಕು', 'want': 'ಬೇಕು', 'have': 'ಇದೆ', 'has': 'ಇದೆ',
       'send': 'ಕಳುಹಿಸಿ', 'come': 'ಬನ್ನಿ', 'go': 'ಹೋಗಿ', 'stop': 'ನಿಲ್ಲಿಸಿ',
       'call': 'ಕರೆ', 'evacuate': 'ಸ್ಥಳಾಂತರ', 'move': 'ಚಲಿಸಿ',
@@ -303,10 +465,12 @@ class OfflineIndicTranslator {
     },
     'ml': {
       'hello': 'നമസ്കാരം', 'hi': 'ഹലോ', 'testing': 'പരിശോധന',
+      'how': 'എങ്ങനെ', 'what': 'എന്ത്', 'where': 'എവിടെ', 'who': 'ആര്', 'when': 'എപ്പോൾ', 'why': 'എന്തുകൊണ്ട്',
       'i': 'ഞാൻ', 'we': 'ഞങ്ങൾ', 'you': 'നിങ്ങൾ', 'they': 'അവർ', 'he': 'അവൻ', 'she': 'അവൾ',
       'my': 'എന്റെ', 'our': 'ഞങ്ങളുടെ', 'your': 'നിങ്ങളുടെ', 'their': 'അവരുടെ',
       'this': 'ഇത്', 'that': 'അത്', 'here': 'ഇവിടെ', 'there': 'അവിടെ',
       'am': 'ആണ്', 'is': 'ആണ്', 'are': 'ആണ്', 'was': 'ആയിരുന്നു', 'were': 'ആയിരുന്നു',
+      'doing': 'ചെയ്യുന്നു', 'going': 'പോകുന്നു',
       'need': 'വേണം', 'want': 'ആഗ്രഹം', 'have': 'ഉണ്ട്', 'has': 'ഉണ്ട്',
       'send': 'അയക്കൂ', 'come': 'വരൂ', 'go': 'പോകൂ', 'stop': 'നിൽക്കുക',
       'call': 'വിളിക്കൂ', 'evacuate': 'ഒഴിപ്പിക്കൂ', 'move': 'നീങ്ങൂ',
@@ -326,10 +490,12 @@ class OfflineIndicTranslator {
     },
     'mr': {
       'hello': 'नमस्कार', 'hi': 'नमस्कार', 'testing': 'चाचणी',
+      'how': 'कसे', 'what': 'काय', 'where': 'कुठे', 'who': 'कोण', 'when': 'कधी', 'why': 'का',
       'i': 'मी', 'we': 'आम्ही', 'you': 'तुम्ही', 'they': 'ते', 'he': 'तो', 'she': 'ती',
       'my': 'माझे', 'our': 'आमचे', 'your': 'तुमचे', 'their': 'त्यांचे',
       'this': 'हे', 'that': 'ते', 'here': 'इथे', 'there': 'तिथे',
-      'am': 'आहे', 'is': 'आहे', 'are': 'आहेत', 'was': 'होते', 'were': 'होते',
+      'am': 'आहे', 'is': 'आहे', 'are': 'आहात', 'was': 'होते', 'were': 'होते',
+      'doing': 'करत आहात', 'going': 'जात आहात',
       'need': 'हवे', 'want': 'हवे', 'have': 'आहे', 'has': 'आहे',
       'send': 'पाठवा', 'come': 'या', 'go': 'जा', 'stop': 'थांबा',
       'call': 'बोलवा', 'evacuate': 'बाहेर काढा', 'move': 'हला',
@@ -349,10 +515,12 @@ class OfflineIndicTranslator {
     },
     'gu': {
       'hello': 'નમસ્તે', 'hi': 'નમસ્તે', 'testing': 'પરીક્ષણ',
+      'how': 'કેમ', 'what': 'શું', 'where': 'ક્યાં', 'who': 'કોણ', 'when': 'ક્યારે', 'why': 'શા માટે',
       'i': 'હું', 'we': 'અમે', 'you': 'તમે', 'they': 'તેઓ', 'he': 'તે', 'she': 'તે',
-      'my': 'મારો', 'our': 'અમારો', 'your': 'તમારો', 'their': 'તેઓનો',
+      'my': 'મારો', 'our': 'અમારો', 'your': 'તમારું', 'their': 'તેઓનો',
       'this': 'આ', 'that': 'તે', 'here': 'અહીં', 'there': 'ત્યાં',
-      'am': 'છું', 'is': 'છે', 'are': 'છે', 'was': 'હતો', 'were': 'હતા',
+      'am': 'છું', 'is': 'છે', 'are': 'છો', 'was': 'હતો', 'were': 'હતા',
+      'doing': 'કરી રહ્યા છો', 'going': 'જઈ રહ્યા છો',
       'need': 'જોઈએ', 'want': 'જોઈએ', 'have': 'છે', 'has': 'છે',
       'send': 'મોકલો', 'come': 'આવો', 'go': 'જાઓ', 'stop': 'થોભો',
       'call': 'બોલાવો', 'evacuate': 'ખાલી કરો', 'move': 'ખસો',
@@ -372,10 +540,12 @@ class OfflineIndicTranslator {
     },
     'bn': {
       'hello': 'হ্যালো', 'hi': 'হ্যালো', 'testing': 'পরীক্ষা',
+      'how': 'কেমন', 'what': 'কী', 'where': 'কোথায়', 'who': 'কে', 'when': 'কখন', 'why': 'কেন',
       'i': 'আমি', 'we': 'আমরা', 'you': 'আপনি', 'they': 'তারা', 'he': 'সে', 'she': 'সে',
       'my': 'আমার', 'our': 'আমাদের', 'your': 'আপনার', 'their': 'তাদের',
       'this': 'এটি', 'that': 'ওটি', 'here': 'এখানে', 'there': 'সেখানে',
       'am': 'আছি', 'is': 'আছে', 'are': 'আছেন', 'was': 'ছিল', 'were': 'ছিলেন',
+      'doing': 'করছেন', 'going': 'যাচ্ছেন',
       'need': 'দরকার', 'want': 'চাই', 'have': 'আছে', 'has': 'আছে',
       'send': 'পাঠান', 'come': 'আসুন', 'go': 'যান', 'stop': 'থামুন',
       'call': 'ডাকুন', 'evacuate': 'সরিয়ে নিন', 'move': 'সরুন',
@@ -395,10 +565,12 @@ class OfflineIndicTranslator {
     },
     'or': {
       'hello': 'ନମସ୍କାର', 'hi': 'ହ୍ୟାଲୋ', 'testing': 'ପରୀକ୍ଷା',
+      'how': 'କେମିତି', 'what': 'କ’ଣ', 'where': 'କେଉଁଠାରେ', 'who': 'କିଏ', 'when': 'କେବେ', 'why': 'କାହିଁକି',
       'i': 'ମୁଁ', 'we': 'ଆମେ', 'you': 'ଆପଣ', 'they': 'ସେମାନେ', 'he': 'ସେ', 'she': 'ସେ',
       'my': 'ମୋର', 'our': 'ଆମର', 'your': 'ଆପଣଙ୍କ', 'their': 'ସେମାନଙ୍କ',
       'this': 'ଏହା', 'that': 'ତାହା', 'here': 'ଏଠାରେ', 'there': 'ସେଠାରେ',
       'am': 'ଅଛି', 'is': 'ଅଛି', 'are': 'ଅଛନ୍ତି', 'was': 'ଥିଲା', 'were': 'ଥିଲେ',
+      'doing': 'କରୁଛନ୍ତି', 'going': 'ଯାଉଛନ୍ତି',
       'need': 'ଦରକାର', 'want': 'ଚାହୁଁ', 'have': 'ଅଛି', 'has': 'ଅଛି',
       'send': 'ପଠାନ୍ତୁ', 'come': 'ଆସନ୍ତୁ', 'go': 'ଯାଆନ୍ତୁ', 'stop': 'ଅଟକନ୍ତୁ',
       'call': 'ଡାକନ୍ତୁ', 'evacuate': 'ସ୍ଥାନ ଛାଡ଼ନ୍ତୁ', 'move': 'ଚଲନ୍ତୁ',
@@ -421,30 +593,37 @@ class OfflineIndicTranslator {
   static String translate(String text, String targetLang) {
     if (text.isEmpty || targetLang == 'en') return text;
 
-    final lower = text.toLowerCase().trim();
+    // Normalize input text: remove punctuation, convert to lowercase, trim spaces
+    final clean = text.toLowerCase()
+        .replaceAll(RegExp(r'[^\w\s]'), '')
+        .replaceAll(RegExp(r'\s+'), ' ')
+        .trim();
+
+    if (clean.isEmpty) return text;
+
     final phraseDict = _phrases[targetLang] ?? {};
     final wordDict = _dictionaries[targetLang] ?? _dictionaries['hi']!;
 
-    // 1. Direct exact phrase match (full sentence)
-    if (phraseDict.containsKey(lower)) return phraseDict[lower]!;
-    if (wordDict.containsKey(lower)) return wordDict[lower]!;
+    // 1. Direct exact phrase match (full sentence match)
+    if (phraseDict.containsKey(clean)) return phraseDict[clean]!;
+    if (wordDict.containsKey(clean)) return wordDict[clean]!;
 
-    // 2. Try longest phrase match within the text
-    String result = lower;
+    // 2. Multi-word phrase substitution (longest phrase first)
+    String result = clean;
     final sortedPhrases = phraseDict.keys.toList()
-      ..sort((a, b) => b.length.compareTo(a.length)); // longest first
+      ..sort((a, b) => b.length.compareTo(a.length));
     for (final phrase in sortedPhrases) {
       if (result.contains(phrase)) {
         result = result.replaceAll(phrase, phraseDict[phrase]!);
       }
     }
 
-    // 3. Word-by-word translation on remaining text
+    // 3. Word-by-word translation on remaining words
     final words = result.split(RegExp(r'\s+'));
     final translated = words.map((w) {
-      final clean = w.replaceAll(RegExp(r'[^\w]'), '').toLowerCase();
-      if (wordDict.containsKey(clean)) return wordDict[clean]!;
-      return w; // keep original (proper nouns, unknown words)
+      final key = w.toLowerCase();
+      if (wordDict.containsKey(key)) return wordDict[key]!;
+      return w;
     }).join(' ');
 
     return translated;

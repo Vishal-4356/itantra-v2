@@ -61,6 +61,8 @@ class ReceiverPipeline {
   final Map<int, Completer<SpeechSynthesizedResultEvent>> _pendingTtsRequests = {};
   int _ttsRequestCounter = 0;
 
+  final Set<String> _recentPacketSignatures = {};
+
   ReceiverPipeline({required this.aiManager, AudioPlayer? audioPlayer}) : _audioPlayer = audioPlayer;
 
   /// Initializes receiver preferences and loads all 10 Indian language packs into memory
@@ -118,6 +120,24 @@ class ReceiverPipeline {
 
   /// Handles incoming packet arriving from P2P Wi-Fi Direct / BLE network layer
   Future<ReceivedMessageEvent> processIncomingPacket(TransceiverPacket packet) async {
+    final sig = '${packet.sequence}_${packet.timestamp}_${packet.mode.index}_${packet.intentId}_${packet.text}';
+    if (_recentPacketSignatures.contains(sig)) {
+      // Duplicate broadcast packet received within short window — return existing/dummy without re-processing
+      return ReceivedMessageEvent(
+        packet: packet,
+        localizedText: '',
+        targetLang: _userBLang,
+        isEmergency: false,
+        networkDeltaMs: 0,
+        synthesisLatencyMs: 0,
+        endToEndLatencyMs: 0,
+      );
+    }
+    _recentPacketSignatures.add(sig);
+    if (_recentPacketSignatures.length > 200) {
+      _recentPacketSignatures.clear();
+    }
+
     final now = DateTime.now().millisecondsSinceEpoch;
     final networkDeltaMs = (now - packet.timestamp).clamp(5, 500);
 
