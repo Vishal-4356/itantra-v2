@@ -247,7 +247,8 @@ class _TransceiverScreenState extends State<TransceiverScreen>
       return;
     }
 
-    transmitIntent(0); // Default emergency intent if general mic talk
+    // When in "Auto" mode without a specific intent selected, transmit Comms Check (Intent 7)
+    transmitIntent(7);
   }
 
   void _triggerEmergencySos() {
