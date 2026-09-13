@@ -1,4 +1,4 @@
-﻿package com.example.itantra_app
+package com.example.itantra_app
 
 import android.app.NotificationManager
 import android.content.Context
@@ -90,7 +90,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                             "mr" -> "mr-IN"
                             "bn" -> "bn-IN"
                             "gu" -> "gu-IN"
-                            "pa" -> "pa-IN"
+                            "or" -> "or-IN"
                             else -> "en-IN"
                         }
 
@@ -172,7 +172,7 @@ class MainActivity : FlutterActivity(), TextToSpeech.OnInitListener {
                             "mr" -> Locale("mr", "IN")
                             "bn" -> Locale("bn", "IN")
                             "gu" -> Locale("gu", "IN")
-                            "pa" -> Locale("pa", "IN")
+                            "pa" -> Locale("or", "IN")
                             else -> Locale("en", "IN")
                         }
                         tts?.language = locale

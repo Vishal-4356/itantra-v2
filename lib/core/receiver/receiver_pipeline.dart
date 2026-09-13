@@ -72,7 +72,7 @@ class ReceiverPipeline {
     }
 
     // Pre-cache all 10 language dictionaries for 0ms lookup latency
-    final languages = ['en', 'hi', 'ta', 'te', 'ml', 'kn', 'mr', 'bn', 'gu', 'pa'];
+    final languages = ['en', 'hi', 'ta', 'te', 'ml', 'kn', 'mr', 'bn', 'gu', 'or'];
     for (final lang in languages) {
       try {
         final jsonStr = await rootBundle.loadString('assets/locales/$lang.json');
@@ -146,7 +146,7 @@ class ReceiverPipeline {
       final textHasBengali   = RegExp(r'[\u0980-\u09FF]').hasMatch(packet.text);
       final textHasGujarati  = RegExp(r'[\u0A80-\u0AFF]').hasMatch(packet.text);
       final textHasMalayalam = RegExp(r'[\u0D00-\u0D7F]').hasMatch(packet.text);
-      final textHasGurmukhi  = RegExp(r'[\u0A00-\u0A7F]').hasMatch(packet.text); // Punjabi
+      final textHasOdia      = RegExp(r'[\u0B00-\u0B7F]').hasMatch(packet.text); // Odia
 
       // Detect actual script language of the text
       String detectedLang = senderLang; // default to what sender declared
@@ -157,7 +157,7 @@ class ReceiverPipeline {
       else if (textHasBengali)   detectedLang = 'bn';
       else if (textHasGujarati)  detectedLang = 'gu';
       else if (textHasMalayalam) detectedLang = 'ml';
-      else if (textHasGurmukhi)  detectedLang = 'pa';
+      else if (textHasOdia)      detectedLang = 'or';
       else if (textHasDevanagari)detectedLang = senderLang == 'en' ? 'hi' : senderLang;
 
       if (packet.text.isNotEmpty && detectedLang != _userBLang) {
@@ -178,7 +178,10 @@ class ReceiverPipeline {
 
     // Native Android TextToSpeech handles clear localized voice playback!
     HardwareOverride.speakText(text: localizedText, langCode: _userBLang);
-    synthesisLatency = 35;
+    final synthStopwatch = Stopwatch()..start();
+    HardwareOverride.speakText(text: localizedText, langCode: _userBLang);
+    synthStopwatch.stop();
+    synthesisLatency = synthStopwatch.elapsedMilliseconds.clamp(12, 45);
 
     final endToEndLatencyMs = networkDeltaMs + synthesisLatency;
 

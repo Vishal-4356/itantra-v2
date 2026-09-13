@@ -21,12 +21,12 @@ class ITantraApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+        scaffoldBackgroundColor: const Color(0xFFF6ECE3),
         colorScheme: const ColorScheme.light(
-          primary: Color(0xFF0284C7),
-          secondary: Color(0xFF059669),
-          error: Color(0xFFDC2626),
-          surface: Colors.white,
+          primary: Color(0xFF5A3E36),
+          secondary: Color(0xFF8C5E52),
+          error: Color(0xFFC84B4B),
+          surface: Color(0xFFF6ECE3),
         ),
         fontFamily: 'Roboto',
       ),

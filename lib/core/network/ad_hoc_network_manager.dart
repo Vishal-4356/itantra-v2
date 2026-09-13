@@ -138,7 +138,7 @@ class AdHocNetworkManager {
 
   void _startDiscoveryHeartbeat() {
     _discoveryTimer?.cancel();
-    _discoveryTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+    _discoveryTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
       await _refreshNetworkInterfaces();
       if (_localIpAddress == null) return;
 
@@ -153,10 +153,16 @@ class AdHocNetworkManager {
         _announceToPeer(gateway);
       } else {
         // 2. If host (192.168.43.1), probe connected client IP range (2..20)
-        _probeSubnetRange(subnetPrefix, 2, 20);
+        _probeSubnetRange(subnetPrefix, 1, 50);
       }
 
-      // 3. Announce to all currently known peers
+      // 3. Send zero-config UDP broadcast ping to 255.255.255.255 for instant zero-touch auto-pairing
+      try {
+        final pingHeader = ByteData(4)..setUint32(0, _localDeviceId);
+        _udpSocket?.send(pingHeader.buffer.asUint8List(), InternetAddress('255.255.255.255'), p2pUdpPort);
+      } catch (_) {}
+
+      // 4. Announce to all currently known peers
       for (final peerIp in _knownPeerIps) {
         _announceToPeer(peerIp);
       }
@@ -190,7 +196,7 @@ class AdHocNetworkManager {
     final parts = _localIpAddress!.split('.');
     if (parts.length == 4) {
       final subnetPrefix = '${parts[0]}.${parts[1]}.${parts[2]}';
-      await _probeSubnetRange(subnetPrefix, 1, 40);
+      await _probeSubnetRange(subnetPrefix, 1, 60);
     }
   }
 
