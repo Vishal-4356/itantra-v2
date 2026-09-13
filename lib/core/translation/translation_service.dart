@@ -73,19 +73,38 @@ class OfflineIndicTranslator {
 
     final dict = _dictionaries[targetLang] ?? _dictionaries['hi']!;
     final lower = text.toLowerCase().trim();
+
+    // 1. Direct exact phrase match
     if (dict.containsKey(lower)) {
       return dict[lower]!;
     }
 
+    // 2. Sub-phrase matching (longest phrases first)
     var result = text;
     final sortedKeys = dict.keys.toList()..sort((a, b) => b.length.compareTo(a.length));
+    bool matchedSubPhrase = false;
     for (final phrase in sortedKeys) {
-      result = result.replaceAll(
-        RegExp(RegExp.escape(phrase), caseSensitive: false),
-        dict[phrase]!,
-      );
+      if (phrase.contains(' ') && RegExp(r'\b' + RegExp.escape(phrase) + r'\b', caseSensitive: false).hasMatch(result)) {
+        result = result.replaceAll(
+          RegExp(r'\b' + RegExp.escape(phrase) + r'\b', caseSensitive: false),
+          dict[phrase]!,
+        );
+        matchedSubPhrase = true;
+      }
     }
-    return result;
+    if (matchedSubPhrase) return result;
+
+    // 3. Word-by-word translation fallback for full sentence coverage
+    final words = text.split(RegExp(r'\s+'));
+    final translatedWords = words.map((word) {
+      final cleanWord = word.replaceAll(RegExp(r'[^\w\s]'), '').toLowerCase();
+      if (dict.containsKey(cleanWord)) {
+        return dict[cleanWord]!;
+      }
+      return word;
+    }).toList();
+
+    return translatedWords.join(' ');
   }
 }
 
