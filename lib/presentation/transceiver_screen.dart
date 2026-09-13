@@ -624,9 +624,6 @@ class _TransceiverScreenState extends State<TransceiverScreen>
                     return GestureDetector(
                       onTap: () {
                         setState(() => _selectedIntentId = id);
-                        if (id >= 0) {
-                          transmitIntent(id);
-                        }
                       },
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
